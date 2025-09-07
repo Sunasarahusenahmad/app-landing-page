@@ -1,0 +1,18 @@
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem;
+    margin-left: 270px;
+}
+
+.footer p {
+    color: var(--text-color);
+}
+
+@media (max-width: 991px) {
+    .footer {
+        margin-left: 0px;
+    }
+}

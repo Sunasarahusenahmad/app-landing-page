@@ -1,0 +1,33 @@
+/* General container setup */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Main content area */
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    margin-left: 270px;
+}
+
+/* Main content styling */
+.main {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: rgb(241, 245, 249);
+}
+
+@media (max-width: 991px) {
+    .content {
+        margin-left: 0px;
+    }
+
+    .main {
+        padding: 0.5rem;
+    }
+}

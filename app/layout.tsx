@@ -1,32 +1,42 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Header from "@/app/components/ui/Header";
-import Footer from "@/app/components/ui/Footer";
+import ConditionalLayout from "@/app/components/layout/ConditionalLayout";
 import "./globals.css";
+
+const geist = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: {
-    default: "MobileApp - Revolutionary Mobile Experience",
-    template: "%s | MobileApp",
+    default: "JeepDial - Car Rental Service",
+    template: "%s | JeepDial",
   },
-  description:
-    "Transform your mobile experience with our innovative app. Download now for iOS and Android.",
-  keywords: ["mobile app", "iOS", "Android", "productivity", "lifestyle"],
-  authors: [{ name: "MobileApp Team" }],
-  creator: "MobileApp",
+  description: "Transform your travel experience with our car rental service.",
+  keywords: ["car rental", "jeep", "travel", "booking", "vehicles"],
+  authors: [{ name: "JeepDial Team" }],
+  creator: "JeepDial",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://yourdomain.com",
-    title: "MobileApp - Revolutionary Mobile Experience",
-    description: "Transform your mobile experience with our innovative app.",
-    siteName: "MobileApp",
+    title: "JeepDial - Car Rental Service",
+    description:
+      "Transform your travel experience with our car rental service.",
+    siteName: "JeepDial",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MobileApp - Revolutionary Mobile Experience",
-    description: "Transform your mobile experience with our innovative app.",
-    creator: "@yourtwitterhandle",
+    title: "JeepDial - Car Rental Service",
+    description:
+      "Transform your travel experience with our car rental service.",
+    creator: "@jeepdial",
   },
   robots: {
     index: true,
@@ -41,10 +51,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased" suppressHydrationWarning={true}>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+      <body
+        className={`${geist.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true}
+      >
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );

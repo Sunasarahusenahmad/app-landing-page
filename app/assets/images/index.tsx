@@ -9,6 +9,9 @@ import AppSS4 from "./App-Screenshots/ss-4.jpg";
 import AppSS5 from "./App-Screenshots/ss-5.jpg";
 import ImageMockUp from "./Hero-Image.png";
 import CTAMockup from "./CTA.png";
+import Blog1 from "./blogs/blog-01.jpg";
+import Blog2 from "./blogs/blog-02.jpg";
+import Blog3 from "./blogs/blog-03.jpg";
 
 export {
   ImageMockUp,
@@ -22,4 +25,7 @@ export {
   AppSS4,
   AppSS5,
   CTAMockup,
+  Blog1,
+  Blog2,
+  Blog3,
 };

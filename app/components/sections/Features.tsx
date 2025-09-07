@@ -1,6 +1,6 @@
 "use client";
 
-import Icons from "../utils/Icons";
+import Icons from "../shared/Icons";
 
 interface Feature {
   icon: React.ReactNode;

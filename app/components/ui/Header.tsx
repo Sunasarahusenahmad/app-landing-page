@@ -130,6 +130,15 @@ export default function Header() {
                       Support
                     </a>
                   </li>
+                  <li className="menu-item">
+                    <a
+                      href="/blogs"
+                      onClick={closeMenu}
+                      className="menu-scroll inline-flex items-center text-base font-medium text-black hover:text-primary dark:text-white dark:hover:text-primary lg:py-7"
+                    >
+                      Blogs
+                    </a>
+                  </li>
                 </ul>
               </nav>
             </div>

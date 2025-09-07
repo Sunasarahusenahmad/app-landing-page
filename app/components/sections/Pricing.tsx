@@ -358,7 +358,7 @@ const Pricing = () => {
                       >
                         <path
                           d="M8 0l2.4 4.8L16 5.6l-4 3.9.9 5.5L8 12.4 3.1 15l.9-5.5-4-3.9 5.6-.8L8 0z"
-                          fill="#3B82F6"
+                          fill="#fab12f"
                         />
                       </svg>
                     </span>

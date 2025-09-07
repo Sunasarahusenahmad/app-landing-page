@@ -1,0 +1,524 @@
+/* Container */
+.container {
+    padding: 24px;
+    background-color: #f9fafb;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 8px 0;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Filters Card */
+.filtersCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.filtersContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+    .filtersContent {
+        flex-direction: row;
+    }
+}
+
+/* Search */
+.searchContainer {
+    flex: 1;
+    max-width: 448px;
+}
+
+.searchInputWrapper {
+    position: relative;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    width: 16px;
+    height: 16px;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 8px 16px 8px 40px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #fab12f;
+    border-color: #fab12f;
+}
+
+/* Filter Section */
+.filterSection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.statusSelect {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.statusSelect:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #fab12f;
+    border-color: #fab12f;
+}
+
+/* Stats */
+.statsContainer {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+}
+
+.statTotal {
+    padding: 4px 12px;
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.statNew {
+    padding: 4px 12px;
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* Table Card */
+.tableCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHead {
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tableHeader {
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tableBody {
+    background-color: white;
+}
+
+.tableRow {
+    transition: background-color 0.2s;
+}
+
+.tableRow:hover {
+    background-color: #f9fafb;
+}
+
+.tableRow:not(:last-child) {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tableCell {
+    padding: 16px 24px;
+    vertical-align: top;
+}
+
+/* Contact Info */
+.contactInfo div {
+    margin: 0;
+}
+
+.contactName {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.contactEmail,
+.contactPhone {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+/* Subject */
+.subject {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+}
+
+/* Message Preview */
+.messagePreview {
+    font-size: 14px;
+    color: #4b5563;
+    max-width: 300px;
+}
+
+/* Status Badges */
+.statusBadge {
+    display: inline-flex;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+}
+
+.statusNew {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.statusRead {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.statusReplied {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.statusResolved {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.statusDefault {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+/* Date */
+.dateText {
+    font-size: 14px;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.viewButton {
+    color: #fab12f;
+    font-size: 14px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.viewButton:hover {
+    color: #1d4ed8;
+}
+
+/* Pagination */
+.pagination {
+    background-color: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #e5e7eb;
+}
+
+.paginationInfo {
+    font-size: 14px;
+    color: #374151;
+}
+
+.paginationButtons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.paginationButton {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.paginationButton:hover:not(.disabled) {
+    background-color: #f9fafb;
+}
+
+.paginationButton.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationButton.activePage {
+    background-color: #fab12f;
+    color: white;
+    border-color: #fab12f;
+}
+
+.paginationButton:hover {
+    color: black;
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 672px;
+    width: 100%;
+    margin: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modalTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.closeButton {
+    color: #9ca3af;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: #4b5563;
+}
+
+.closeIcon {
+    width: 24px;
+    height: 24px;
+}
+
+.modalContent {
+    padding: 24px;
+}
+
+.modalGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+    .modalGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.modalField {
+    margin-bottom: 16px;
+}
+
+.modalLabel {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.modalValue {
+    font-size: 14px;
+    color: #111827;
+    margin: 0;
+}
+
+.modalMessage {
+    font-size: 14px;
+    color: #111827;
+    background-color: #f9fafb;
+    padding: 12px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+.modalFooter {
+    padding: 16px 24px 24px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modalCancelButton {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalCancelButton:hover {
+    background-color: #f9fafb;
+}
+
+.modalConfirmButton {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    background-color: #fab12f;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalConfirmButton:hover {
+    background-color: #fabc52;
+}
+
+/* Empty State */
+.emptyState {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 48px;
+    text-align: center;
+}
+
+.emptyIcon {
+    margin: 0 auto 16px auto;
+    height: 48px;
+    width: 48px;
+    color: #9ca3af;
+}
+
+.emptyTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
+
+.emptySubtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .filtersCard {
+        padding: 16px;
+    }
+
+    .tableCell {
+        padding: 12px 16px;
+    }
+
+    .modalContent {
+        padding: 16px;
+    }
+
+    .modalHeader {
+        padding: 16px 16px 12px 16px;
+    }
+
+    .modalFooter {
+        padding: 12px 16px 16px 16px;
+    }
+}
