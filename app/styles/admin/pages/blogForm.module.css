@@ -1,0 +1,535 @@
+/* blogForm.module.css */
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 20px;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cancelButton:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.form {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+  display: flex;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  border: none;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tab:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.tabActive {
+  color: #fab12f;
+  background-color: #ffffff;
+  border-bottom-color: #fab12f;
+}
+
+.tabIcon {
+  font-size: 16px;
+}
+
+.tabLabel {
+  font-weight: 600;
+}
+
+.formContent {
+  padding: 32px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.input {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  background-color: #ffffff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #fab12f;
+}
+
+.inputError {
+  border-color: #ef4444;
+}
+
+.textarea {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  background-color: #ffffff;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #fab12f;
+}
+
+.select {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #fab12f;
+}
+
+.imageUpload {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.imageUpload .input {
+  flex: 1;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  padding: 12px 20px;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.uploadButton:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.charCount {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: right;
+}
+
+.helpText {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.errorText {
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #fab12f;
+  cursor: pointer;
+}
+
+.checkboxText {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.formActions {
+  padding: 24px 32px;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
+.cancelActionButton {
+  padding: 12px 24px;
+  background-color: #ffffff;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelActionButton:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.draftButton {
+  padding: 12px 24px;
+  background-color: #6b7280;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.draftButton:hover:not(:disabled) {
+  background-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+.draftButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.publishButton {
+  padding: 12px 24px;
+  background-color: #fab12f;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.publishButton:hover:not(:disabled) {
+  background-color: #f59e0b;
+  transform: translateY(-1px);
+}
+
+.publishButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 20px;
+  }
+  
+  .formContent {
+    padding: 24px;
+  }
+  
+  .formActions {
+    padding: 20px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .cancelButton {
+    align-self: flex-start;
+  }
+  
+  .title {
+    font-size: 28px;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .tabIcon {
+    font-size: 14px;
+  }
+  
+  .formContent {
+    padding: 20px;
+    max-height: 60vh;
+  }
+  
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .imageUpload {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .uploadButton {
+    align-self: flex-start;
+  }
+  
+  .formActions {
+    padding: 16px 20px;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .cancelActionButton,
+  .draftButton,
+  .publishButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .tabs {
+    padding: 0;
+  }
+  
+  .tab {
+    padding: 10px 12px;
+    font-size: 12px;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .tabLabel {
+    display: none;
+  }
+  
+  .tabIcon {
+    font-size: 16px;
+  }
+  
+  .formContent {
+    padding: 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+  }
+  
+  .input,
+  .textarea,
+  .select {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .uploadButton {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+  
+  .formActions {
+    padding: 12px 16px;
+  }
+  
+  .cancelActionButton,
+  .draftButton,
+  .publishButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Scrollbar styling for form content */
+.formContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.formContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.formContent::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.formContent::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Focus styles for accessibility */
+.tab:focus-visible {
+  outline: 2px solid #fab12f;
+  outline-offset: -2px;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+  outline: 2px solid #fab12f;
+  outline-offset: -2px;
+}
+
+.uploadButton:focus-visible,
+.cancelActionButton:focus-visible,
+.draftButton:focus-visible,
+.publishButton:focus-visible,
+.cancelButton:focus-visible {
+  outline: 2px solid #fab12f;
+  outline-offset: 2px;
+}

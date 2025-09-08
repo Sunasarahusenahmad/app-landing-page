@@ -169,27 +169,27 @@
 }
 
 .confirmButtonDefault {
-    background-color: #fab12f;
+    background-color: #fab12f !important;
 }
 
 .confirmButtonDefault:hover {
-    background-color: #fabd54;
+    background-color: #fabd54 !important;
 }
 
 .confirmButtonDelete {
-    background-color: #ef4444;
+    background-color: #ef4444 !important;
 }
 
 .confirmButtonDelete:hover {
-    background-color: #dc2626;
+    background-color: #dc2626 !important;
 }
 
 .confirmButtonReject {
-    background-color: #f97316;
+    background-color: #f97316 !important;
 }
 
 .confirmButtonReject:hover {
-    background-color: #ea580c;
+    background-color: #ea580c !important;
 }
 
 .confirmButtonLogout {

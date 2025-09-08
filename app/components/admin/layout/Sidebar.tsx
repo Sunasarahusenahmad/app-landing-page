@@ -23,6 +23,12 @@ const navs: NavItem[] = [
     icon: "Contact",
     url: ROUTES.ADMIN_ROUTES.contacts,
   },
+  {
+    id: 3,
+    name: "Blogs",
+    icon: "StickyNote",
+    url: ROUTES.ADMIN_ROUTES.blogs,
+  },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setOpenSidebar }) => {

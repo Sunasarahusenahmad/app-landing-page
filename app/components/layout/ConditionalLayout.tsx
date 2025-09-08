@@ -20,7 +20,7 @@ export default function ConditionalLayout({
   }
 
   // Check if current route is admin
-  if (pathname?.startsWith("/admin")) {
+  if (pathname?.startsWith(ROUTES.ADMIN_ROUTES.base)) {
     return <AdminLayout>{children}</AdminLayout>;
   }
 
