@@ -17,7 +17,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
-import { Metadata } from "next";
+import type { LucideIcon } from "lucide-react";
 import styles from '@/app/styles/admin/pages/dashboard.module.css';
 
 // Note: This would typically be in a separate file
@@ -54,7 +54,7 @@ interface StatCard {
   value: string | number;
   change: number;
   changeLabel: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   color: string;
   bgColor: string;
 }
@@ -318,7 +318,7 @@ const AdminDashboard: React.FC = () => {
                   className={styles.statIcon}
                   style={{ backgroundColor: card.bgColor }}
                 >
-                  <IconComponent size={24} style={{ color: card.color }} />
+                  <IconComponent size={24} color={card.color} />
                 </div>
                 <div className={styles.statChange}>
                   {card.change > 0 ? (
