@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/app/styles/admin/pages/contacts.module.css";
+import ConfirmModal from "@/app/components/admin/ui/ConfirmModal";
+const port = process.env.NEXT_PUBLIC_APP_URL;
 
 // Types for contact data
 interface Contact {
@@ -12,85 +14,253 @@ interface Contact {
   subject: string;
   message: string;
   created_at: string;
-  status: "new" | "read" | "replied" | "resolved";
+  updated_at: string;
+  deleted_at: string | null;
+  status: number; // API uses numeric status
 }
 
-// Dummy data
-const dummyContacts: Contact[] = [
-  {
-    id: 1,
-    full_name: "Nofal Basan",
-    email: "nofal@techuz.com",
-    phone_number: "9090909090",
-    subject: "Advance",
-    message: "Hey How are you ?",
-    created_at: "2025-01-15T10:30:00Z",
-    status: "new",
-  },
-  {
-    id: 2,
-    full_name: "John Smith",
-    email: "john.smith@example.com",
-    phone_number: "9876543210",
-    subject: "Car Booking Inquiry",
-    message:
-      "I would like to book a jeep for weekend trip to Goa. Please provide available options and pricing.",
-    created_at: "2025-01-14T14:20:00Z",
-    status: "read",
-  },
-  {
-    id: 3,
-    full_name: "Priya Sharma",
-    email: "priya.sharma@gmail.com",
-    phone_number: "8765432109",
-    subject: "Payment Issue",
-    message:
-      "I made a payment but it's not reflecting in my booking. Transaction ID: TXN123456789",
-    created_at: "2025-01-14T09:15:00Z",
-    status: "replied",
-  },
-  {
-    id: 4,
-    full_name: "Rahul Gupta",
-    email: "rahul.gupta@yahoo.com",
-    phone_number: "7654321098",
-    subject: "Cancellation Request",
-    message:
-      "Due to emergency, I need to cancel my booking for tomorrow. Booking ID: BK001234",
-    created_at: "2025-01-13T16:45:00Z",
-    status: "resolved",
-  },
-  {
-    id: 5,
-    full_name: "Sarah Johnson",
-    email: "sarah.j@hotmail.com",
-    phone_number: "6543210987",
-    subject: "Vehicle Complaint",
-    message:
-      "The vehicle provided had some mechanical issues during our trip. Need compensation discussion.",
-    created_at: "2025-01-13T11:30:00Z",
-    status: "read",
-  },
-  {
-    id: 6,
-    full_name: "Amit Patel",
-    email: "amit.patel@company.com",
-    phone_number: "5432109876",
-    subject: "Corporate Booking",
-    message:
-      "We need multiple vehicles for our company retreat. Can you provide bulk booking discounts?",
-    created_at: "2025-01-12T13:20:00Z",
-    status: "new",
-  },
-];
+interface ContactDetails extends Contact {
+  // Additional fields if needed for detailed view
+}
+
+interface PaginationData {
+  totalRecords: number;
+  currentPage: number;
+  recordPerPage: number;
+  previous: number | null;
+  pages: number;
+  next: number | null;
+}
+
+interface ApiResponse {
+  data: {
+    pagination: PaginationData;
+    result: Contact[];
+  };
+  message: string;
+  status: number;
+}
+
+interface SingleContactResponse {
+  data: ContactDetails;
+  message: string;
+  status: number;
+}
 
 export default function ContactsPage() {
-  const [contacts, setContacts] = useState<Contact[]>(dummyContacts);
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [selectedContact, setSelectedContact] = useState<ContactDetails | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [pagination, setPagination] = useState<PaginationData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<number | null>(null);
+
+  // Status mapping - adjust these based on your API's status values
+  const statusMap = {
+    1: "new",
+    2: "processing", 
+    3: "closed",
+  } as const;
+
+  const reverseStatusMap = {
+    "new": 1,
+    "processing": 2,
+    "closed": 3
+  } as const;
+
+  // Get auth token
+  const getAuthToken = () => {
+    return localStorage.getItem("adminToken");
+  };
+
+  // Fetch contacts from API
+  const fetchContacts = async (page: number = 1) => {
+    try {
+      setIsLoading(true);
+      setError("");
+      
+      const token = getAuthToken();
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      const response = await fetch(`${port}/admin/contact?page=${page}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ApiResponse = await response.json();
+      
+      if (data.status === 200) {
+        setContacts(data.data.result);
+        setPagination(data.data.pagination);
+      } else {
+        throw new Error(data.message || "Failed to fetch contacts");
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      setError("Failed to load contacts. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch single contact details
+  const fetchContactDetails = async (contactId: number) => {
+    try {
+      setIsLoadingDetail(true);
+      
+      const token = getAuthToken();
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      const response = await fetch(`${port}/admin/contact/${contactId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: SingleContactResponse = await response.json();
+      
+      if (data.status === 200) {
+        setSelectedContact(data.data);
+      } else {
+        throw new Error(data.message || "Failed to fetch contact details");
+      }
+    } catch (error) {
+      console.error("Error fetching contact details:", error);
+      setError("Failed to load contact details. Please try again.");
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  };
+
+  // Update contact status
+  const updateContactStatus = async (contactId: number, newStatus: number) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      const response = await fetch(`${port}/admin/contact/change-status/${contactId}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 200) {
+        // Update local state
+        setContacts(prev => 
+          prev.map(contact => 
+            contact.id === contactId 
+              ? { ...contact, status: newStatus }
+              : contact
+          )
+        );
+        
+        // Update selected contact if it's the same one
+        if (selectedContact && selectedContact.id === contactId) {
+          setSelectedContact(prev => prev ? { ...prev, status: newStatus } : null);
+        }
+      } else {
+        throw new Error(data.message || "Failed to update status");
+      }
+    } catch (error) {
+      console.error("Error updating contact status:", error);
+      setError("Failed to update contact status. Please try again.");
+    }
+  };
+
+  // Delete contact
+  const handleDeleteContact = async (contactId: number) => {
+    try {
+      setIsDeleting(true);
+      setError("");
+      
+      const token = getAuthToken();
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      const response = await fetch(`${port}/admin/contact/${contactId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 200) {
+        // Remove from local state
+        setContacts(prev => prev.filter(contact => contact.id !== contactId));
+        
+        // Close modal if the deleted contact was selected
+        setSelectedContact(null);
+        
+        // Refresh the list to get updated pagination
+        fetchContacts(currentPage);
+      } else {
+        throw new Error(data.message || "Failed to delete contact");
+      }
+    } catch (error) {
+      console.error("Error deleting contact:", error);
+      setError("Failed to delete contact. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Load contacts on component mount and page change
+  useEffect(() => {
+    fetchContacts(currentPage);
+  }, [currentPage]);
+
+  // Handle view contact
+  const handleViewContact = async (contact: Contact) => {
+    await fetchContactDetails(contact.id);
+  };
 
   // Filter contacts based on search and status
   const filteredContacts = contacts.filter((contact) => {
@@ -99,19 +269,11 @@ export default function ContactsPage() {
       contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.subject.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "all" || contact.status === statusFilter;
+    const contactStatusString = statusMap[contact.status as keyof typeof statusMap] || "unknown";
+    const matchesStatus = statusFilter === "all" || contactStatusString === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedContacts = filteredContacts.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -125,31 +287,18 @@ export default function ContactsPage() {
   };
 
   // Get status badge color
-  const getStatusClass = (status: string) => {
-    switch (status) {
+  const getStatusClass = (status: number) => {
+    const statusString = statusMap[status as keyof typeof statusMap];
+    switch (statusString) {
       case "new":
         return styles.statusNew;
-      case "read":
-        return styles.statusRead;
-      case "replied":
-        return styles.statusReplied;
-      case "resolved":
-        return styles.statusResolved;
+      case "processing":
+        return styles.statusProcessing;
+      case "closed":
+        return styles.statusClosed;
       default:
         return styles.statusDefault;
     }
-  };
-
-  // Update contact status
-  const updateContactStatus = (
-    contactId: number,
-    newStatus: Contact["status"]
-  ) => {
-    setContacts((prev) =>
-      prev.map((contact) =>
-        contact.id === contactId ? { ...contact, status: newStatus } : contact
-      )
-    );
   };
 
   // Truncate message
@@ -158,6 +307,49 @@ export default function ContactsPage() {
       ? message.substring(0, maxLength) + "..."
       : message;
   };
+
+  // Get status display text
+  const getStatusText = (status: number) => {
+    const statusString = statusMap[status as keyof typeof statusMap];
+    return statusString ? statusString.charAt(0).toUpperCase() + statusString.slice(1) : "Unknown";
+  };
+
+  // Calculate stats
+  const getStatusCount = (statusNum: number) => {
+    return contacts.filter(c => c.status === statusNum).length;
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loadingState}>
+          <div className={styles.spinner}></div>
+          <p>Loading contacts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Handler to show delete confirmation modal
+const handleDeleteClick = (contactId: number) => {
+  setContactToDelete(contactId);
+  setShowDeleteModal(true);
+};
+
+// Handler for confirming delete
+const handleDeleteConfirm = async () => {
+  if (contactToDelete) {
+    await handleDeleteContact(contactToDelete);
+    setShowDeleteModal(false);
+    setContactToDelete(null);
+  }
+};
+
+// Handler for canceling delete
+const handleDeleteCancel = () => {
+  setShowDeleteModal(false);
+  setContactToDelete(null);
+};
 
   return (
     <div className={styles.container}>
@@ -168,6 +360,17 @@ export default function ContactsPage() {
           Manage customer inquiries and messages
         </p>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className={styles.errorMessage}>
+          <svg className={styles.errorIcon} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {error}
+          <button onClick={() => setError("")} className={styles.errorClose}>×</button>
+        </div>
+      )}
 
       {/* Filters and Search */}
       <div className={styles.filtersCard}>
@@ -207,16 +410,17 @@ export default function ContactsPage() {
             >
               <option value="all">All Status</option>
               <option value="new">New</option>
-              <option value="read">Read</option>
-              <option value="replied">Replied</option>
-              <option value="resolved">Resolved</option>
+              <option value="processing">Processing</option>
+              <option value="closed">Closed</option>
             </select>
 
             {/* Stats */}
             <div className={styles.statsContainer}>
-              <span className={styles.statTotal}>Total: {contacts.length}</span>
+              <span className={styles.statTotal}>
+                Total: {pagination?.totalRecords || 0}
+              </span>
               <span className={styles.statNew}>
-                New: {contacts.filter((c) => c.status === "new").length}
+                New: {getStatusCount(1)}
               </span>
             </div>
           </div>
@@ -238,7 +442,7 @@ export default function ContactsPage() {
               </tr>
             </thead>
             <tbody className={styles.tableBody}>
-              {paginatedContacts.map((contact) => (
+              {filteredContacts.map((contact) => (
                 <tr key={contact.id} className={styles.tableRow}>
                   <td className={styles.tableCell}>
                     <div className={styles.contactInfo}>
@@ -261,12 +465,9 @@ export default function ContactsPage() {
                   </td>
                   <td className={styles.tableCell}>
                     <span
-                      className={`${styles.statusBadge} ${getStatusClass(
-                        contact.status
-                      )}`}
+                      className={`${styles.statusBadge} ${getStatusClass(contact.status)}`}
                     >
-                      {contact.status.charAt(0).toUpperCase() +
-                        contact.status.slice(1)}
+                      {getStatusText(contact.status)}
                     </span>
                   </td>
                   <td className={styles.tableCell}>
@@ -277,25 +478,22 @@ export default function ContactsPage() {
                   <td className={styles.tableCell}>
                     <div className={styles.actions}>
                       <button
-                        onClick={() => setSelectedContact(contact)}
+                        onClick={() => handleViewContact(contact)}
                         className={styles.viewButton}
+                        disabled={isLoadingDetail}
                       >
-                        View
+                        {isLoadingDetail ? "Loading..." : "View"}
                       </button>
                       <select
                         value={contact.status}
                         onChange={(e) =>
-                          updateContactStatus(
-                            contact.id,
-                            e.target.value as Contact["status"]
-                          )
+                          updateContactStatus(contact.id, parseInt(e.target.value))
                         }
                         className={styles.statusSelect}
                       >
-                        <option value="new">New</option>
-                        <option value="read">Read</option>
-                        <option value="replied">Replied</option>
-                        <option value="resolved">Resolved</option>
+                        <option value={1}>New</option>
+                        <option value={2}>Processing</option>
+                        <option value={3}>Closed</option>
                       </select>
                     </div>
                   </td>
@@ -306,24 +504,24 @@ export default function ContactsPage() {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {pagination && pagination.pages > 1 && (
           <div className={styles.pagination}>
             <div className={styles.paginationInfo}>
-              Showing {startIndex + 1} to{" "}
-              {Math.min(startIndex + itemsPerPage, filteredContacts.length)} of{" "}
-              {filteredContacts.length} results
+              Showing {((currentPage - 1) * pagination.recordPerPage) + 1} to{" "}
+              {Math.min(currentPage * pagination.recordPerPage, pagination.totalRecords)} of{" "}
+              {pagination.totalRecords} results
             </div>
             <div className={styles.paginationButtons}>
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={!pagination.previous}
                 className={`${styles.paginationButton} ${
-                  currentPage === 1 ? styles.disabled : ""
+                  !pagination.previous ? styles.disabled : ""
                 }`}
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(
                 (page) => (
                   <button
                     key={page}
@@ -337,12 +535,10 @@ export default function ContactsPage() {
                 )
               )}
               <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.pages))}
+                disabled={!pagination.next}
                 className={`${styles.paginationButton} ${
-                  currentPage === totalPages ? styles.disabled : ""
+                  !pagination.next ? styles.disabled : ""
                 }`}
               >
                 Next
@@ -413,12 +609,9 @@ export default function ContactsPage() {
               <div className={styles.modalField}>
                 <label className={styles.modalLabel}>Status</label>
                 <span
-                  className={`${styles.statusBadge} ${getStatusClass(
-                    selectedContact.status
-                  )}`}
+                  className={`${styles.statusBadge} ${getStatusClass(selectedContact.status)}`}
                 >
-                  {selectedContact.status.charAt(0).toUpperCase() +
-                    selectedContact.status.slice(1)}
+                  {getStatusText(selectedContact.status)}
                 </span>
               </div>
             </div>
@@ -431,20 +624,67 @@ export default function ContactsPage() {
               </button>
               <button
                 onClick={() => {
-                  updateContactStatus(selectedContact.id, "replied");
+                  updateContactStatus(selectedContact.id, 3); // Mark as closed
                   setSelectedContact(null);
                 }}
                 className={styles.modalConfirmButton}
+                disabled={isDeleting}
               >
-                Mark as Replied
+                Mark as Closed
+              </button>
+              <button
+                onClick={() => handleDeleteClick(selectedContact.id)}
+                className={styles.modalDeleteButton}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className={styles.spinner} viewBox="0 0 24 24">
+                      <circle
+                        className={styles.spinnerCircle}
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className={styles.deleteIcon}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Delete Contact
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        type="delete"
+        title="Delete Contact"
+        message="Are you sure you want to delete this contact? This action cannot be undone and all contact information will be permanently removed."
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
+
       {/* Empty State */}
-      {filteredContacts.length === 0 && (
+      {!isLoading && filteredContacts.length === 0 && (
         <div className={styles.emptyState}>
           <svg
             className={styles.emptyIcon}
@@ -461,7 +701,10 @@ export default function ContactsPage() {
           </svg>
           <h3 className={styles.emptyTitle}>No contacts found</h3>
           <p className={styles.emptySubtitle}>
-            Try adjusting your search or filter criteria.
+            {searchTerm || statusFilter !== "all" 
+              ? "Try adjusting your search or filter criteria."
+              : "No contacts have been submitted yet."
+            }
           </p>
         </div>
       )}

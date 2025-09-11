@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Users, 
   FileText, 
@@ -20,11 +21,21 @@ import {
 import type { LucideIcon } from "lucide-react";
 import styles from '@/app/styles/admin/pages/dashboard.module.css';
 
-// Note: This would typically be in a separate file
-// export const metadata: Metadata = {
-//   title: "Admin Dashboard - Gadiyo",
-//   description: "Admin dashboard for managing cars, bookings, and more",
-// };
+const port = process.env.NEXT_PUBLIC_APP_URL;
+
+// Add your ROUTES import here
+// import { ROUTES } from '@/app/constants/routes'; // Adjust path as needed
+
+interface Contact {
+  id: number;
+  full_name: string;
+  email: string;
+  phone_number: string;
+  subject: string;
+  message: string;
+  created_at: string;
+  status: number;
+}
 
 interface DashboardStats {
   totalContacts: number;
@@ -39,6 +50,8 @@ interface DashboardStats {
   completedBookings: number;
   averageRating: number;
   responseTime: number;
+  newContacts: number; // New contacts today
+  unreadContacts: number; // Unread contacts
 }
 
 interface RecentActivity {
@@ -46,7 +59,8 @@ interface RecentActivity {
   type: 'contact' | 'blog' | 'inquiry' | 'booking';
   title: string;
   time: string;
-  status?: 'pending' | 'completed' | 'published' | 'draft';
+  status?: 'pending' | 'completed' | 'published' | 'draft' | 'new' | 'read';
+  contactId?: number; // For contact-related activities
 }
 
 interface StatCard {
@@ -59,7 +73,24 @@ interface StatCard {
   bgColor: string;
 }
 
+interface ApiResponse {
+  data: {
+    pagination: {
+      totalRecords: number;
+      currentPage: number;
+      recordPerPage: number;
+      previous: number | null;
+      pages: number;
+      next: number | null;
+    };
+    result: Contact[];
+  };
+  message: string;
+  status: number;
+}
+
 const AdminDashboard: React.FC = () => {
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     totalContacts: 0,
     totalBlogs: 0,
@@ -72,40 +103,79 @@ const AdminDashboard: React.FC = () => {
     pendingInquiries: 0,
     completedBookings: 0,
     averageRating: 0,
-    responseTime: 0
+    responseTime: 0,
+    newContacts: 0,
+    unreadContacts: 0
   });
 
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [recentContacts, setRecentContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Mock data - replace with actual API calls
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      // Simulate API call
-      setTimeout(() => {
-        setStats({
-          totalContacts: 1247,
-          totalBlogs: 89,
-          totalInquiries: 324,
-          totalBookings: 156,
-          totalCars: 45,
-          monthlyRevenue: 125000,
-          activeUsers: 892,
-          blogViews: 15420,
-          pendingInquiries: 23,
-          completedBookings: 133,
-          averageRating: 4.7,
-          responseTime: 2.3
-        });
+  // Get auth token
+  const getAuthToken = () => {
+    return localStorage.getItem("adminToken");
+  };
 
-        setRecentActivity([
-          {
-            id: '1',
-            type: 'contact',
-            title: 'New contact from John Doe',
-            time: '2 minutes ago',
-            status: 'pending'
-          },
+  // Fetch contacts from API
+  const fetchContacts = async () => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      const response = await fetch(`${port}/admin/contact?page=1`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ApiResponse = await response.json();
+      
+      if (data.status === 200) {
+        const contacts = data.data.result;
+        setRecentContacts(contacts.slice(0, 5)); // Get latest 5 contacts
+        
+        // Calculate contact stats
+        const totalContacts = data.data.pagination.totalRecords;
+        const today = new Date().toDateString();
+        const newContactsToday = contacts.filter(contact => 
+          new Date(contact.created_at).toDateString() === today
+        ).length;
+        const unreadContacts = contacts.filter(contact => 
+          contact.status === 1 // Assuming 1 is "new" status
+        ).length;
+
+        // Update stats with real contact data
+        setStats(prevStats => ({
+          ...prevStats,
+          totalContacts,
+          newContacts: newContactsToday,
+          unreadContacts,
+          pendingInquiries: unreadContacts // Use unread contacts as pending inquiries
+        }));
+
+        // Generate recent activity from contacts
+        const contactActivities: RecentActivity[] = contacts.slice(0, 3).map(contact => ({
+          id: `contact-${contact.id}`,
+          type: 'contact',
+          title: `New contact from ${contact.full_name}`,
+          time: getTimeAgo(contact.created_at),
+          status: getContactStatus(contact.status),
+          contactId: contact.id
+        }));
+
+        // Merge with existing activities (blogs, bookings, etc.)
+        const otherActivities: RecentActivity[] = [
           {
             id: '2',
             type: 'blog',
@@ -114,34 +184,85 @@ const AdminDashboard: React.FC = () => {
             status: 'published'
           },
           {
-            id: '3',
-            type: 'inquiry',
-            title: 'Car rental inquiry for BMW X5',
-            time: '30 minutes ago',
-            status: 'pending'
-          },
-          {
             id: '4',
             type: 'booking',
             title: 'Booking confirmed for Toyota Camry',
             time: '1 hour ago',
             status: 'completed'
-          },
-          {
-            id: '5',
-            type: 'contact',
-            title: 'Support request from Sarah Smith',
-            time: '2 hours ago',
-            status: 'pending'
           }
-        ]);
+        ];
 
-        setLoading(false);
-      }, 1000);
+        setRecentActivity([...contactActivities, ...otherActivities]);
+
+      } else {
+        throw new Error(data.message || "Failed to fetch contacts");
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      setError("Failed to load dashboard data. Please try again.");
+    }
+  };
+
+  // Helper function to get contact status string
+  const getContactStatus = (status: number): 'new' | 'read' | 'pending' | 'completed' => {
+    switch (status) {
+      case 1: return 'new';
+      case 2: return 'read';
+      case 3: return 'completed';
+      case 4: return 'completed';
+      default: return 'pending';
+    }
+  };
+
+  // Helper function to calculate time ago
+  const getTimeAgo = (dateString: string): string => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  };
+
+  // Load dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      
+      // Initialize with default values
+      setStats({
+        totalContacts: 0,
+        totalBlogs: 89,
+        totalInquiries: 0,
+        totalBookings: 156,
+        totalCars: 45,
+        monthlyRevenue: 125000,
+        activeUsers: 892,
+        blogViews: 15420,
+        pendingInquiries: 0,
+        completedBookings: 133,
+        averageRating: 4.7,
+        responseTime: 2.3,
+        newContacts: 0,
+        unreadContacts: 0
+      });
+
+      // Fetch real contact data
+      await fetchContacts();
+      
+      setLoading(false);
     };
 
     fetchDashboardData();
   }, []);
+
+  // Navigation handlers
+  const handleViewContacts = () => {
+    // Replace with your actual route
+    router.push('/admin/contacts'); // or ROUTES.ADMIN_ROUTES.contacts
+  };
 
   const statCards: StatCard[] = [
     {
@@ -154,22 +275,31 @@ const AdminDashboard: React.FC = () => {
       bgColor: '#eff6ff'
     },
     {
+      title: 'New Contacts Today',
+      value: stats.newContacts,
+      change: stats.newContacts > 0 ? 100 : 0,
+      changeLabel: 'new today',
+      icon: Phone,
+      color: '#10b981',
+      bgColor: '#f0fdf4'
+    },
+    {
+      title: 'Unread Contacts',
+      value: stats.unreadContacts,
+      change: stats.unreadContacts > 5 ? -10 : 5,
+      changeLabel: 'needs attention',
+      icon: Mail,
+      color: '#f59e0b',
+      bgColor: '#fffbeb'
+    },
+    {
       title: 'Total Blogs',
       value: stats.totalBlogs,
       change: 8.2,
       changeLabel: 'vs last month',
       icon: FileText,
-      color: '#10b981',
-      bgColor: '#f0fdf4'
-    },
-    {
-      title: 'Total Inquiries',
-      value: stats.totalInquiries.toLocaleString(),
-      change: 15.7,
-      changeLabel: 'vs last month',
-      icon: MessageSquare,
-      color: '#f59e0b',
-      bgColor: '#fffbeb'
+      color: '#8b5cf6',
+      bgColor: '#faf5ff'
     },
     {
       title: 'Total Bookings',
@@ -177,8 +307,8 @@ const AdminDashboard: React.FC = () => {
       change: 23.1,
       changeLabel: 'vs last month',
       icon: Calendar,
-      color: '#8b5cf6',
-      bgColor: '#faf5ff'
+      color: '#ef4444',
+      bgColor: '#fef2f2'
     },
     {
       title: 'Available Cars',
@@ -186,8 +316,8 @@ const AdminDashboard: React.FC = () => {
       change: 5.4,
       changeLabel: 'vs last month',
       icon: Car,
-      color: '#ef4444',
-      bgColor: '#fef2f2'
+      color: '#06b6d4',
+      bgColor: '#f0fdfa'
     },
     {
       title: 'Monthly Revenue',
@@ -199,20 +329,11 @@ const AdminDashboard: React.FC = () => {
       bgColor: '#fefce8'
     },
     {
-      title: 'Active Users',
-      value: stats.activeUsers.toLocaleString(),
-      change: 7.3,
-      changeLabel: 'vs last month',
-      icon: Eye,
-      color: '#06b6d4',
-      bgColor: '#f0fdfa'
-    },
-    {
       title: 'Blog Views',
       value: `${(stats.blogViews / 1000).toFixed(1)}K`,
       change: 31.2,
       changeLabel: 'vs last month',
-      icon: TrendingUp,
+      icon: Eye,
       color: '#84cc16',
       bgColor: '#f7fee7'
     }
@@ -221,10 +342,10 @@ const AdminDashboard: React.FC = () => {
   const quickStats = [
     {
       label: 'Pending Inquiries',
-      value: stats.pendingInquiries,
+      value: stats.unreadContacts,
       icon: Clock,
       color: '#f59e0b',
-      urgent: stats.pendingInquiries > 20
+      urgent: stats.unreadContacts > 10
     },
     {
       label: 'Completed Bookings',
@@ -266,17 +387,34 @@ const AdminDashboard: React.FC = () => {
 
   const getStatusColor = (status?: string) => {
     switch (status) {
+      case 'new':
+        return '#f59e0b';
       case 'pending':
         return '#f59e0b';
       case 'completed':
         return '#10b981';
       case 'published':
         return '#3b82f6';
+      case 'read':
+        return '#6b7280';
       case 'draft':
         return '#6b7280';
       default:
         return '#6b7280';
     }
+  };
+
+  const handleActivityClick = (activity: RecentActivity) => {
+    if (activity.type === 'contact' && activity.contactId) {
+      // Navigate to contacts page with specific contact highlighted
+      router.push(`/admin/contacts?highlight=${activity.contactId}`);
+    }
+  };
+
+  const refreshData = async () => {
+    setLoading(true);
+    await fetchContacts();
+    setLoading(false);
   };
 
   if (loading) {
@@ -292,6 +430,14 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {/* Error Message */}
+      {error && (
+        <div className={styles.errorMessage}>
+          <span>{error}</span>
+          <button onClick={() => setError('')}>×</button>
+        </div>
+      )}
+
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.title}>Admin Dashboard</h1>
@@ -300,7 +446,7 @@ const AdminDashboard: React.FC = () => {
           </p>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.refreshButton}>
+          <button className={styles.refreshButton} onClick={refreshData}>
             <TrendingUp size={16} />
             Refresh Data
           </button>
@@ -372,13 +518,22 @@ const AdminDashboard: React.FC = () => {
         <div className={styles.activityCard}>
           <div className={styles.activityHeader}>
             <h2 className={styles.sectionTitle}>Recent Activity</h2>
-            <button className={styles.viewAllButton}>View All</button>
+            <button 
+              className={styles.viewAllButton}
+              onClick={handleViewContacts}
+            >
+              View All
+            </button>
           </div>
           <div className={styles.activityList}>
             {recentActivity.map((activity) => {
               const IconComponent = getActivityIcon(activity.type);
               return (
-                <div key={activity.id} className={styles.activityItem}>
+                <div 
+                  key={activity.id} 
+                  className={`${styles.activityItem} ${activity.type === 'contact' ? styles.clickable : ''}`}
+                  onClick={() => handleActivityClick(activity)}
+                >
                   <div className={styles.activityIcon}>
                     <IconComponent size={16} />
                   </div>
@@ -410,7 +565,10 @@ const AdminDashboard: React.FC = () => {
           <div className={styles.actionCardContent}>
             <h3>Manage Contacts</h3>
             <p>View and respond to customer contacts</p>
-            <button className={styles.actionButton}>
+            <button 
+              className={styles.actionButton}
+              onClick={handleViewContacts}
+            >
               View Contacts
               <ArrowUpRight size={16} />
             </button>

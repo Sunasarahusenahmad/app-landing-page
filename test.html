@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gadiyo Marketing Plan Excel Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        button {
+            display: block;
+            width: 300px;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gadiyo Marketing Plan - Excel Generator</h1>
+        <div class="info">
+            <h3>This will generate a complete Excel file with:</h3>
+            <ul>
+                <li>Month 1: Launch & Awareness Phase (4 weeks)</li>
+                <li>Month 2: Growth & Expansion Phase (4 weeks)</li>
+                <li>Marketing Tools & Recommendations</li>
+                <li>KPIs and Metrics to Track</li>
+            </ul>
+        </div>
+        <button onclick="generateAndDownloadExcel()">Download Marketing Plan (.xlsx)</button>
+    </div>
+
+    <script>
+        function generateAndDownloadExcel() {
+            // Create a new workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Month 1 Marketing Plan Data
+            const month1Data = [
+                ["Gadiyo Marketing Plan - Month 1: Launch & Awareness Phase"],
+                ["Service Areas: Banaskantha, Patan, Mehsana"],
+                ["Target Audience: Riders & Car Agencies"],
+                [],
+                ["Month/Week", "Activity", "Content Type", "Topic", "Sub Activities", "Assigned To", "Date of Execution", "Execution", "Remarks"],
+                
+                // Week 1
+                ["Month 1", "", "", "", "", "", "", "", ""],
+                ["Week 1", "Pre-Launch Teaser Campaign", "Social Media", "Coming Soon - Gadiyo App", "Countdown posts creation", "Marketing Team", "Day 1-2", "FALSE", "Build anticipation"],
+                ["", "", "", "", "Teaser video production", "Video Team", "Day 2-3", "FALSE", "30-second video"],
+                ["", "", "", "", "Graphics design", "Design Team", "Day 1-2", "FALSE", "Consistent branding"],
+                ["", "", "", "", "Social media scheduling", "Marketing Team", "Day 3", "FALSE", "Peak hours"],
+                
+                ["", "Blog Posting", "Blog", "Solving Transportation Problems in North Gujarat", "Content Writing", "Content Team", "Day 2", "FALSE", "SEO optimized"],
+                ["", "", "", "", "Keyword Research", "SEO Team", "Day 1", "FALSE", "Local keywords"],
+                ["", "", "", "", "Website Posting", "Tech Team", "Day 3", "FALSE", "WordPress"],
+                ["", "", "", "", "Medium Publishing", "Content Team", "Day 3", "FALSE", "Cross-platform"],
+                
+                ["", "WhatsApp Business Setup", "Messaging", "Join Gadiyo - Early Bird Offers", "Business Account Setup", "Tech Team", "Day 1", "FALSE", "Verified account"],
+                ["", "", "", "", "Database Collection", "Sales Team", "Day 2-4", "FALSE", "GDPR compliant"],
+                ["", "", "", "", "Broadcast Lists Creation", "Marketing Team", "Day 4", "FALSE", "Segmented lists"],
+                ["", "", "", "", "Status Updates", "Marketing Team", "Day 3-7", "FALSE", "Daily updates"],
+                
+                ["", "Local Influencer Outreach", "Partnership", "Collaborate with Local Travel Bloggers", "Influencer Research", "PR Team", "Day 4", "FALSE", "10K+ followers"],
+                ["", "", "", "", "Initial Contact", "PR Team", "Day 5", "FALSE", "Personalized outreach"],
+                ["", "", "", "", "Negotiation", "Business Dev", "Day 6", "FALSE", "Barter/Paid"],
+                ["", "", "", "", "Content Calendar", "Content Team", "Day 7", "FALSE", "Monthly plan"],
+                
+                ["", "Google My Business", "Local SEO", "Business Profile Setup", "Account Creation", "SEO Team", "Day 5", "FALSE", "All 3 cities"],
+                ["", "", "", "", "Business Information", "Marketing Team", "Day 5", "FALSE", "Complete details"],
+                ["", "", "", "", "Photos Upload", "Design Team", "Day 6", "FALSE", "High quality"],
+                ["", "", "", "", "Verification Process", "SEO Team", "Day 6-7", "FALSE", "Phone/Postcard"],
+                
+                // Week 2
+                ["Week 2", "Official Launch", "Multi-channel", "Gadiyo is Live - Download Now", "Launch Video Creation", "Video Team", "Day 8", "FALSE", "2-minute video"],
+                ["", "", "", "", "Press Release", "PR Team", "Day 8", "FALSE", "Media distribution"],
+                ["", "", "", "", "App Screenshots", "Design Team", "Day 7", "FALSE", "Play Store ready"],
+                ["", "", "", "", "Social Media Blast", "Marketing Team", "Day 8", "FALSE", "All platforms"],
+                
+                ["", "Facebook/Instagram Ads", "Paid Ads", "App Install Campaign - Riders", "Campaign Setup", "Marketing Team", "Day 8", "FALSE", "₹500/day budget"],
+                ["", "", "", "", "Audience Targeting", "Marketing Team", "Day 8", "FALSE", "Location-based"],
+                ["", "", "", "", "Ad Creative Design", "Design Team", "Day 7", "FALSE", "Multiple variants"],
+                ["", "", "", "", "A/B Testing", "Marketing Team", "Day 9-14", "FALSE", "Optimize CTR"],
+                
+                ["", "Email Campaign", "Email Marketing", "Welcome to Gadiyo", "Template Design", "Design Team", "Day 8", "FALSE", "Mobile responsive"],
+                ["", "", "", "", "List Segmentation", "Marketing Team", "Day 9", "FALSE", "User personas"],
+                ["", "", "", "", "Content Writing", "Content Team", "Day 8", "FALSE", "Compelling copy"],
+                ["", "", "", "", "Campaign Launch", "Marketing Team", "Day 9", "FALSE", "Track metrics"],
+                
+                ["", "Agency Onboarding Drive", "Direct Sales", "Register Your Fleet", "Target List Creation", "Sales Team", "Day 9", "FALSE", "100 agencies"],
+                ["", "", "", "", "Sales Deck Preparation", "Sales Team", "Day 9", "FALSE", "Benefits focus"],
+                ["", "", "", "", "Field Visits", "Field Team", "Day 10-14", "FALSE", "Door-to-door"],
+                ["", "", "", "", "Follow-up Calls", "Sales Team", "Day 12-14", "FALSE", "Conversion tracking"],
+                
+                ["", "Tutorial Videos", "Educational", "How to Use Gadiyo", "Script Writing", "Content Team", "Day 10", "FALSE", "Simple language"],
+                ["", "", "", "", "Screen Recording", "Video Team", "Day 11", "FALSE", "App walkthrough"],
+                ["", "", "", "", "Video Editing", "Video Team", "Day 11", "FALSE", "Add subtitles"],
+                ["", "", "", "", "YouTube Upload", "Marketing Team", "Day 12", "FALSE", "SEO optimized"],
+                
+                // Week 3
+                ["Week 3", "Customer Testimonials", "Social Proof", "Real User Stories", "Customer Interviews", "Content Team", "Day 15", "FALSE", "5 customers"],
+                ["", "", "", "", "Video Production", "Video Team", "Day 16", "FALSE", "Authentic stories"],
+                ["", "", "", "", "Quote Graphics", "Design Team", "Day 16", "FALSE", "Shareable format"],
+                ["", "", "", "", "Social Media Posts", "Marketing Team", "Day 17", "FALSE", "Multi-platform"],
+                
+                ["", "Google Search Ads", "PPC", "Cab Booking + Location Keywords", "Keyword Research", "SEO Team", "Day 14", "FALSE", "Local intent"],
+                ["", "", "", "", "Ad Copy Writing", "Content Team", "Day 15", "FALSE", "Multiple versions"],
+                ["", "", "", "", "Landing Page", "Web Team", "Day 15", "FALSE", "Conversion focused"],
+                ["", "", "", "", "Campaign Launch", "Marketing Team", "Day 15-21", "FALSE", "₹300/day budget"],
+                
+                ["", "Referral Program", "Growth Hacking", "Refer & Earn", "Program Structure", "Product Team", "Day 16", "FALSE", "Reward system"],
+                ["", "", "", "", "Technical Setup", "Tech Team", "Day 17", "FALSE", "Tracking codes"],
+                ["", "", "", "", "Promotional Materials", "Design Team", "Day 17", "FALSE", "Explainer graphics"],
+                ["", "", "", "", "Launch Communication", "Marketing Team", "Day 18", "FALSE", "In-app + Email"],
+                
+                ["", "Local Radio Campaign", "Traditional Media", "Radio Advertisements", "Script Writing", "Content Team", "Day 17", "FALSE", "30-second spot"],
+                ["", "", "", "", "Voice Recording", "Production", "Day 18", "FALSE", "Professional VO"],
+                ["", "", "", "", "Media Buying", "Media Team", "Day 18", "FALSE", "Prime time slots"],
+                ["", "", "", "", "Broadcasting", "Radio Stations", "Day 19-21", "FALSE", "3x daily"],
+                
+                ["", "Content Marketing", "Blog", "Benefits of Using Gadiyo", "Topic Research", "Content Team", "Day 18", "FALSE", "User benefits"],
+                ["", "", "", "", "Article Writing", "Content Team", "Day 19", "FALSE", "1500 words"],
+                ["", "", "", "", "SEO Optimization", "SEO Team", "Day 19", "FALSE", "Target keywords"],
+                ["", "", "", "", "Publishing", "Content Team", "Day 20", "FALSE", "Website + LinkedIn"],
+                
+                // Week 4
+                ["Week 4", "Festival Campaign", "Seasonal Marketing", "Festival Season Travel", "Campaign Planning", "Marketing Team", "Day 21", "FALSE", "Local festivals"],
+                ["", "", "", "", "Creative Design", "Design Team", "Day 22", "FALSE", "Festival themes"],
+                ["", "", "", "", "Discount Codes", "Product Team", "Day 22", "FALSE", "20% off"],
+                ["", "", "", "", "Multi-channel Push", "Marketing Team", "Day 22-24", "FALSE", "Coordinated campaign"],
+                
+                ["", "Instagram Contest", "Engagement", "#MyGadiyoRide Challenge", "Contest Rules", "Legal Team", "Day 24", "FALSE", "Terms & conditions"],
+                ["", "", "", "", "Prize Selection", "Marketing Team", "Day 24", "FALSE", "Attractive rewards"],
+                ["", "", "", "", "Promotional Posts", "Social Team", "Day 24", "FALSE", "Contest graphics"],
+                ["", "", "", "", "Contest Management", "Social Team", "Day 25-28", "FALSE", "Daily monitoring"],
+                
+                ["", "Partnership Announcement", "PR", "Strategic Partnerships", "Partner Finalization", "Business Dev", "Day 23-25", "FALSE", "5 partners"],
+                ["", "", "", "", "Press Release", "PR Team", "Day 25", "FALSE", "Media kit"],
+                ["", "", "", "", "Joint Marketing", "Marketing Team", "Day 26", "FALSE", "Co-branded content"],
+                ["", "", "", "", "Social Announcement", "Marketing Team", "Day 26", "FALSE", "Partner tags"],
+                
+                ["", "Feature Highlights", "Product Marketing", "App Features Showcase", "Feature List", "Product Team", "Day 25", "FALSE", "USPs"],
+                ["", "", "", "", "Demo Video", "Video Team", "Day 26", "FALSE", "Screen recording"],
+                ["", "", "", "", "Infographics", "Design Team", "Day 26", "FALSE", "Visual guide"],
+                ["", "", "", "", "Blog Post", "Content Team", "Day 27", "FALSE", "Feature benefits"],
+                
+                ["", "Monthly Analytics", "Reporting", "Performance Review", "Data Collection", "Analytics Team", "Day 28", "FALSE", "All metrics"],
+                ["", "", "", "", "Report Creation", "Analytics Team", "Day 29", "FALSE", "Visual dashboard"],
+                ["", "", "", "", "Team Meeting", "All Teams", "Day 30", "FALSE", "Review & planning"],
+                ["", "", "", "", "Strategy Adjustment", "Marketing Head", "Day 30", "FALSE", "Month 2 planning"]
+            ];
+            
+            // Month 2 Marketing Plan Data
+            const month2Data = [
+                ["Gadiyo Marketing Plan - Month 2: Growth & Expansion Phase"],
+                ["Focus: User Retention, Market Expansion, Revenue Growth"],
+                [],
+                ["Month/Week", "Activity", "Content Type", "Topic", "Sub Activities", "Assigned To", "Date of Execution", "Execution", "Remarks"],
+                
+                // Week 5
+                ["Month 2", "", "", "", "", "", "", "", ""],
+                ["Week 5", "Driver Spotlight", "Content Series", "Partner Driver Stories", "Driver Selection", "Operations", "Day 31", "FALSE", "Top performers"],
+                ["", "", "", "", "Interview Recording", "Content Team", "Day 31-32", "FALSE", "Video interviews"],
+                ["", "", "", "", "Story Editing", "Video Team", "Day 32", "FALSE", "3-min videos"],
+                ["", "", "", "", "Series Launch", "Marketing Team", "Day 33", "FALSE", "Weekly release"],
+                
+                ["", "Corporate Partnerships", "B2B Sales", "Gadiyo for Business", "Lead Generation", "Sales Team", "Day 31", "FALSE", "50 companies"],
+                ["", "", "", "", "Proposal Creation", "Sales Team", "Day 31", "FALSE", "Custom proposals"],
+                ["", "", "", "", "Meeting Schedule", "Sales Team", "Day 32-35", "FALSE", "C-level meetings"],
+                ["", "", "", "", "Contract Closure", "Legal Team", "Day 35-37", "FALSE", "SLA agreements"],
+                
+                ["", "YouTube Advertising", "Video Ads", "TrueView Campaigns", "Video Script", "Content Team", "Day 31", "FALSE", "15-second ads"],
+                ["", "", "", "", "Video Production", "Video Team", "Day 32", "FALSE", "Professional quality"],
+                ["", "", "", "", "Campaign Setup", "Marketing Team", "Day 33", "FALSE", "₹10000 budget"],
+                ["", "", "", "", "Performance Tracking", "Analytics Team", "Day 33-37", "FALSE", "View rates"],
+                
+                ["", "Customer Feedback", "Research", "User Experience Survey", "Survey Design", "Research Team", "Day 34", "FALSE", "10 questions"],
+                ["", "", "", "", "Distribution", "Marketing Team", "Day 35", "FALSE", "Email + In-app"],
+                ["", "", "", "", "Data Collection", "Research Team", "Day 35-37", "FALSE", "Min 500 responses"],
+                ["", "", "", "", "Analysis Report", "Analytics Team", "Day 37", "FALSE", "Actionable insights"],
+                
+                ["", "Local Economy Blog", "Content", "Supporting Local Business", "Research", "Content Team", "Day 34", "FALSE", "Economic impact"],
+                ["", "", "", "", "Stakeholder Interviews", "Content Team", "Day 35", "FALSE", "Success stories"],
+                ["", "", "", "", "Article Writing", "Content Team", "Day 35", "FALSE", "2000 words"],
+                ["", "", "", "", "Publication", "Content Team", "Day 36", "FALSE", "PR angle"],
+                
+                // Week 6
+                ["Week 6", "Safety Campaign", "Awareness", "Safe Travel Initiative", "Safety Audit", "Product Team", "Day 37", "FALSE", "Feature review"],
+                ["", "", "", "", "Content Creation", "Content Team", "Day 38", "FALSE", "Safety tips"],
+                ["", "", "", "", "Visual Design", "Design Team", "Day 38", "FALSE", "Infographics"],
+                ["", "", "", "", "Campaign Launch", "Marketing Team", "Day 38-40", "FALSE", "Multi-channel"],
+                
+                ["", "Event Sponsorship", "On-ground", "Local Event Presence", "Event Selection", "PR Team", "Day 38", "FALSE", "High footfall"],
+                ["", "", "", "", "Sponsorship Deal", "Business Dev", "Day 39", "FALSE", "Branding rights"],
+                ["", "", "", "", "Booth Setup", "Events Team", "Day 40", "FALSE", "Interactive booth"],
+                ["", "", "", "", "Lead Collection", "Field Team", "Day 40-42", "FALSE", "App installs"],
+                
+                ["", "App Update", "Product Launch", "New Features Release", "Feature Documentation", "Product Team", "Day 40", "FALSE", "Changelog"],
+                ["", "", "", "", "Update Video", "Video Team", "Day 40", "FALSE", "Feature demo"],
+                ["", "", "", "", "Release Notes", "Content Team", "Day 40", "FALSE", "User-friendly"],
+                ["", "", "", "", "Launch Communication", "Marketing Team", "Day 41", "FALSE", "Push notification"],
+                
+                ["", "Retargeting Campaign", "Performance Marketing", "Win-back Campaign", "Audience Segmentation", "Analytics Team", "Day 41", "FALSE", "Inactive users"],
+                ["", "", "", "", "Offer Design", "Marketing Team", "Day 41", "FALSE", "Incentives"],
+                ["", "", "", "", "Ad Creation", "Design Team", "Day 42", "FALSE", "Dynamic ads"],
+                ["", "", "", "", "Campaign Run", "Marketing Team", "Day 42-44", "FALSE", "FB + Google"],
+                
+                ["", "Success Stories", "Case Studies", "Agency Growth Stories", "Agency Selection", "Operations", "Day 41", "FALSE", "Top 5"],
+                ["", "", "", "", "Data Analysis", "Analytics Team", "Day 42", "FALSE", "Growth metrics"],
+                ["", "", "", "", "Interviews", "Content Team", "Day 42", "FALSE", "Testimonials"],
+                ["", "", "", "", "Publication", "Content Team", "Day 43", "FALSE", "Website + LinkedIn"],
+                
+                // Week 7
+                ["Week 7", "Loyalty Program", "Retention", "Gadiyo Rewards Launch", "Program Design", "Product Team", "Day 44", "FALSE", "Points system"],
+                ["", "", "", "", "Tech Implementation", "Tech Team", "Day 44", "FALSE", "Backend setup"],
+                ["", "", "", "", "Launch Materials", "Design Team", "Day 44", "FALSE", "Explainer content"],
+                ["", "", "", "", "Program Launch", "Marketing Team", "Day 45", "FALSE", "Grand launch"],
+                
+                ["", "Print Advertising", "Traditional", "Newspaper Ads", "Ad Copy", "Content Team", "Day 45", "FALSE", "Local language"],
+                ["", "", "", "", "Design Layout", "Design Team", "Day 45", "FALSE", "Print ready"],
+                ["", "", "", "", "Media Buying", "Media Team", "Day 46", "FALSE", "3 newspapers"],
+                ["", "", "", "", "Publication", "Newspapers", "Day 46-48", "FALSE", "Weekend editions"],
+                
+                ["", "Student Campaign", "Targeted", "Student Special Offers", "College Partnerships", "Business Dev", "Day 46", "FALSE", "10 colleges"],
+                ["", "", "", "", "Verification Setup", "Tech Team", "Day 47", "FALSE", "Student ID check"],
+                ["", "", "", "", "Campus Activation", "Field Team", "Day 47-49", "FALSE", "Booth setup"],
+                ["", "", "", "", "Social Push", "Marketing Team", "Day 48-49", "FALSE", "Student influencers"],
+                
+                ["", "Dynamic Pricing", "Revenue", "Surge Pricing Model", "Model Design", "Product Team", "Day 48", "FALSE", "Algorithm"],
+                ["", "", "", "", "User Communication", "Marketing Team", "Day 49", "FALSE", "Transparency"],
+                ["", "", "", "", "Driver Incentives", "Operations", "Day 49", "FALSE", "Bonus structure"],
+                ["", "", "", "", "Soft Launch", "Tech Team", "Day 50", "FALSE", "Testing phase"],
+                
+                // Week 8
+                ["Week 8", "Expansion News", "PR", "New Cities Announcement", "Market Research", "Strategy Team", "Day 50", "FALSE", "3 new cities"],
+                ["", "", "", "", "Expansion Plan", "Business Dev", "Day 51", "FALSE", "Rollout timeline"],
+                ["", "", "", "", "Press Conference", "PR Team", "Day 52", "FALSE", "Media event"],
+                ["", "", "", "", "Digital Campaign", "Marketing Team", "Day 52-54", "FALSE", "Coming soon"],
+                
+                ["", "Driver Recruitment", "HR Campaign", "Join Gadiyo Fleet", "Job Descriptions", "HR Team", "Day 51", "FALSE", "Multiple roles"],
+                ["", "", "", "", "Portal Listings", "HR Team", "Day 52", "FALSE", "Job sites"],
+                ["", "", "", "", "Walk-in Drives", "HR Team", "Day 53-55", "FALSE", "Mass hiring"],
+                ["", "", "", "", "Onboarding", "Operations", "Day 55-56", "FALSE", "Training program"],
+                
+                ["", "Influencer Campaign", "Social Media", "Mega Influencer Collaboration", "Influencer Selection", "PR Team", "Day 52", "FALSE", "Regional stars"],
+                ["", "", "", "", "Content Creation", "Influencers", "Day 53-54", "FALSE", "Authentic content"],
+                ["", "", "", "", "Campaign Launch", "Marketing Team", "Day 55", "FALSE", "Coordinated push"],
+                ["", "", "", "", "Performance Tracking", "Analytics Team", "Day 55-57", "FALSE", "Reach & engagement"],
+                
+                ["", "Performance Review", "Analytics", "2-Month Assessment", "Data Compilation", "Analytics Team", "Day 54", "FALSE", "Comprehensive"],
+                ["", "", "", "", "ROI Analysis", "Finance Team", "Day 55", "FALSE", "Channel-wise"],
+                ["", "", "", "", "Report Preparation", "Analytics Team", "Day 56", "FALSE", "Board presentation"],
+                ["", "", "", "", "Strategy Meeting", "Leadership", "Day 57", "FALSE", "Q3 planning"],
+                
+                ["", "Celebration Campaign", "Brand Building", "2-Month Milestone", "Campaign Concept", "Creative Team", "Day 56", "FALSE", "Thank you theme"],
+                ["", "", "", "", "Celebration Video", "Video Team", "Day 57", "FALSE", "Highlights reel"],
+                ["", "", "", "", "Special Offers", "Marketing Team", "Day 58", "FALSE", "Anniversary deals"],
+                ["", "", "", "", "Social Celebration", "Marketing Team", "Day 58-60", "FALSE", "User-generated content"]
+            ];
+            
+            // Tools & Recommendations Data
+            const toolsData = [
+                ["Marketing Tools & Platform Recommendations for Gadiyo"],
+                [],
+                ["Category", "Tool/Platform", "Purpose", "Monthly Cost (INR)", "Priority", "Notes"],
+                [],
+                ["Social Media Management", "Meta Business Suite", "Facebook & Instagram management", "Free (Organic)", "High", "Essential for local targeting"],
+                ["Social Media Management", "Meta Ads Manager", "Facebook & Instagram advertising", "15000", "High", "Paid campaigns"],
+                ["Social Media Management", "Buffer/Hootsuite", "Social media scheduling", "3000", "Medium", "Time-saving automation"],
+                ["Social Media Management", "Canva Pro", "Graphics and video creation", "500", "High", "Professional designs"],
+                [],
+                ["Search & Display", "Google Ads", "Search and display advertising", "20000", "High", "High-intent users"],
+                ["Search & Display", "Google My Business", "Local SEO", "Free", "High", "Local visibility"],
+                ["Search & Display", "YouTube Ads", "Video advertising", "10000", "Medium", "Brand awareness"],
+                [],
+                ["Communication", "WhatsApp Business API", "Customer communication", "5000", "High", "Direct engagement"],
+                ["Communication", "Mailchimp", "Email marketing", "2000", "Medium", "Automated campaigns"],
+                ["Communication", "Intercom", "Customer support chat", "3000", "Low", "In-app support"],
+                [],
+                ["Traditional Media", "Local Radio FM", "Radio advertising", "20000", "Medium", "Mass awareness"],
+                ["Traditional Media", "Local Newspapers", "Print advertising", "10000", "Low", "Older demographic"],
+                ["Traditional Media", "Outdoor Advertising", "Hoardings and banners", "15000", "Low", "Local visibility"],
+                [],
+                ["Analytics & Tracking", "Google Analytics", "Website and app analytics", "Free", "High", "Essential metrics"],
+                ["Analytics & Tracking", "Mixpanel", "Advanced app analytics", "5000", "Medium", "User behavior"],
+                ["Analytics & Tracking", "Google Data Studio", "Reporting dashboards", "Free", "High", "Visual reports"],
+                ["Analytics & Tracking", "Firebase", "App performance", "Free", "High", "Technical metrics"],
+                [],
+                ["Content Creation", "Adobe Creative Suite", "Professional design tools", "4000", "Low", "Advanced editing"],
+                ["Content Creation", "Loom", "Screen recording", "1000", "Medium", "Tutorial videos"],
+                ["Content Creation", "Grammarly", "Content editing", "500", "Low", "Quality control"],
+                [],
+                ["CRM & Sales", "HubSpot CRM", "Customer relationship management", "Free", "Medium", "Basic CRM"],
+                ["CRM & Sales", "Zoho CRM", "Advanced CRM features", "1000", "Low", "Scalable solution"],
+                [],
+                ["Influencer Marketing", "Instagram Direct", "Influencer outreach", "Free", "High", "Direct communication"],
+                ["Influencer Marketing", "Influencer.in", "Influencer discovery", "5000", "Low", "Database access"],
+                [],
+                ["Total Monthly Budget", "", "", "100000-150000", "", "Adjust based on ROI"]
+            ];
+            
+            // KPIs Data
+            const kpisData = [
+                ["Key Performance Indicators (KPIs) - 2 Month Campaign"],
+                [],
+                ["Category", "Metric", "Month 1 Target", "Month 2 Target", "Measurement Tool", "Review Frequency"],
+                [],
+                ["App Metrics", "Total Downloads", "5000", "15000", "App Store Analytics", "Daily"],
+                ["App Metrics", "Daily Active Users", "500", "3000", "Firebase", "Daily"],
+                ["App Metrics", "Monthly Active Users", "2000", "8000", "Firebase", "Weekly"],
+                ["App Metrics", "User Retention (7-day)", "30%", "45%", "Mixpanel", "Weekly"],
+                ["App Metrics", "App Store Rating", "4.0+", "4.3+", "App Stores", "Weekly"],
+                [],
+                ["Acquisition", "Cost Per Install", "Rs 50", "Rs 35", "Ad Platforms", "Daily"],
+                ["Acquisition", "Organic Install Rate", "30%", "50%", "Analytics", "Weekly"],
+                ["Acquisition", "Referral Signups", "200", "1000", "App Backend", "Daily"],
+                ["Acquisition", "Conversion Rate", "20%", "35%", "Analytics", "Daily"],
+                [],
+                ["Booking Metrics", "Total Rides", "2000", "10000", "Backend", "Daily"],
+                ["Booking Metrics", "Average Booking Value", "Rs 150", "Rs 175", "Backend", "Daily"],
+                ["Booking Metrics", "Booking Frequency", "2/month", "4/month", "Analytics", "Weekly"],
+                ["Booking Metrics", "Cancellation Rate", "15%", "10%", "Backend", "Daily"],
+                ["Booking Metrics", "Repeat Booking Rate", "15%", "40%", "CRM", "Weekly"],
+                [],
+                ["Supply Side", "Total Agencies", "50", "150", "Operations", "Weekly"],
+                ["Supply Side", "Total Vehicles", "200", "600", "Backend", "Daily"],
+                ["Supply Side", "Driver Utilization", "40%", "60%", "Operations", "Daily"],
+                ["Supply Side", "Driver Rating", "4.0+", "4.2+", "App", "Weekly"],
+                ["Supply Side", "Driver Churn Rate", "10%", "5%", "HR", "Monthly"],
+                [],
+                ["Marketing", "Social Media Followers", "2000", "8000", "Social Platforms", "Daily"],
+                ["Marketing", "Engagement Rate", "3%", "5%", "Social Analytics", "Daily"],
+                ["Marketing", "Website Traffic", "10000", "30000", "Google Analytics", "Daily"],
+                ["Marketing", "Email Open Rate", "25%", "35%", "Mailchimp", "Per Campaign"],
+                ["Marketing", "Click-Through Rate", "2%", "3.5%", "Ad Platforms", "Daily"],
+                ["Marketing", "Share of Voice", "5%", "15%", "Social Listening", "Weekly"],
+                [],
+                ["Revenue", "Monthly Revenue", "Rs 300000", "Rs 1500000", "Finance", "Daily"],
+                ["Revenue", "Average Revenue Per User", "Rs 60", "Rs 100", "Analytics", "Weekly"],
+                ["Revenue", "Commission Rate", "15%", "15%", "Backend", "Fixed"],
+                ["Revenue", "Payment Success Rate", "95%", "98%", "Payment Gateway", "Daily"],
+                [],
+                ["Customer Service", "Response Time", "5 min", "2 min", "Support Tool", "Daily"],
+                ["Customer Service", "Resolution Time", "30 min", "15 min", "Support Tool", "Daily"],
+                ["Customer Service", "CSAT Score", "70%", "85%", "Survey", "Weekly"],
+                ["Customer Service", "NPS Score", "20", "40", "Survey", "Monthly"],
+                [],
+                ["Geographic", "Banaskantha Coverage", "30%", "60%", "Operations", "Weekly"],
+                ["Geographic", "Patan Coverage", "25%", "55%", "Operations", "Weekly"],
+                ["Geographic", "Mehsana Coverage", "35%", "65%", "Operations", "Weekly"],
+                ["Geographic", "Rural Penetration", "10%", "30%", "Operations", "Monthly"]
+            ];
+            
+            // Create worksheets
+            const ws1 = XLSX.utils.aoa_to_sheet(month1Data);
+            const ws2 = XLSX.utils.aoa_to_sheet(month2Data);
+            const ws3 = XLSX.utils.aoa_to_sheet(toolsData);
+            const ws4 = XLSX.utils.aoa_to_sheet(kpisData);
+            
+            // Set column widths
+            ws1['!cols'] = [
+                {wch: 12}, {wch: 25}, {wch: 15}, {wch: 40}, {wch: 30}, {wch: 15}, {wch: 18}, {wch: 10}, {wch: 25}
+            ];
+            ws2['!cols'] = [
+                {wch: 12}, {wch: 25}, {wch: 15}, {wch: 40}, {wch: 30}, {wch: 15}, {wch: 18}, {wch: 10}, {wch: 25}
+            ];
+            ws3['!cols'] = [
+                {wch: 25}, {wch: 25}, {wch: 35}, {wch: 20}, {wch: 12}, {wch: 35}
+            ];
+            ws4['!cols'] = [
+                {wch: 20}, {wch: 30}, {wch: 15}, {wch: 15}, {wch: 20}, {wch: 15}
+            ];
+            
+            // Add worksheets to workbook
+            XLSX.utils.book_append_sheet(wb, ws1, "Month 1 Launch");
+            XLSX.utils.book_append_sheet(wb, ws2, "Month 2 Growth");
+            XLSX.utils.book_append_sheet(wb, ws3, "Tools & Platforms");
+            XLSX.utils.book_append_sheet(wb, ws4, "KPIs & Metrics");
+            
+            // Generate the Excel file
+            XLSX.writeFile(wb, "Gadiyo_Marketing_Plan_2Months.xlsx");
+            
+            alert("Excel file 'Gadiyo_Marketing_Plan_2Months.xlsx' has been downloaded successfully!");
+        }
+    </script>
+</body>
+</html>

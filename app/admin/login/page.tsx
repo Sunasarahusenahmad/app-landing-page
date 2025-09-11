@@ -3,13 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "@/app/styles/admin/pages/login.module.css";
-import { ROUTES } from "@/app/lib/constants";
-
-// Static admin credentials
-const ADMIN_CREDENTIALS = {
-  email: "admin@gadiyo.com",
-  password: "admin@123",
-};
+import { API_ENDPOINTS, ROUTES } from "@/app/lib/constants";
+const port = process.env.NEXT_PUBLIC_APP_URL;
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({
@@ -23,8 +18,9 @@ export default function AdminLogin() {
 
   // Check if already logged in
   useEffect(() => {
+    const token = localStorage.getItem("adminToken");
     const isLoggedIn = localStorage.getItem("adminLoggedIn");
-    if (isLoggedIn === "true") {
+    if (token && isLoggedIn === "true") {
       router.push(ROUTES.ADMIN_ROUTES.dashboard);
     }
   }, [router]);
@@ -34,30 +30,45 @@ export default function AdminLogin() {
     setIsLoading(true);
     setError("");
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (
-      formData.email === ADMIN_CREDENTIALS.email &&
-      formData.password === ADMIN_CREDENTIALS.password
-    ) {
-      // Set login state
-      localStorage.setItem("adminLoggedIn", "true");
-      localStorage.setItem(
-        "adminUser",
-        JSON.stringify({
+    try {
+      const response = await fetch(`${port}/${API_ENDPOINTS.adminLogin}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           email: formData.email,
-          name: "Admin User",
-          loginTime: new Date().toISOString(),
-        })
-      );
+          password: formData.password,
+          role: "Admin"
+        }),
+      });
 
-      router.push(ROUTES.ADMIN_ROUTES.dashboard);
-    } else {
-      setError("Invalid email or password");
+      const data = await response.json();
+
+      if (response.ok && data.status === 200) {
+        // Store authentication data
+        localStorage.setItem("adminToken", data.data.token);
+        localStorage.setItem("adminLoggedIn", "true");
+        localStorage.setItem(
+          "adminUser",
+          JSON.stringify({
+            ...data.data.loginDetails,
+            loginTime: new Date().toISOString(),
+          })
+        );
+
+        // Redirect to dashboard
+        router.push(ROUTES.ADMIN_ROUTES.dashboard);
+      } else {
+        // Handle API error response
+        setError(data.message || "Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,9 +217,9 @@ export default function AdminLogin() {
           <p className={styles.footerText}>
             Demo Credentials:
             <br />
-            Email: admin@gadiyo.com
+            Email: nofal+admin@techuz.com
             <br />
-            Password: admin@123
+            Password: [Contact admin for password]
           </p>
         </div>
       </div>

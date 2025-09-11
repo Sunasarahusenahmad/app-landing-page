@@ -1,6 +1,8 @@
 "use client";
 
+import { API_ENDPOINTS } from "@/app/lib/constants";
 import React, { useState, ChangeEvent } from "react";
+const port = process.env.NEXT_PUBLIC_APP_URL;
 
 // TypeScript interfaces
 interface FormData {
@@ -135,7 +137,7 @@ const Contact: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://69.62.78.40:4200/api/common/user-contact",
+        `${port}/${API_ENDPOINTS.sendContact}`,
         {
           method: "POST",
           headers: {
