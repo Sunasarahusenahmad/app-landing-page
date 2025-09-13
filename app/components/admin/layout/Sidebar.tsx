@@ -29,6 +29,12 @@ const navs: NavItem[] = [
     icon: "StickyNote",
     url: ROUTES.ADMIN_ROUTES.blogs,
   },
+    {
+    id: 4,
+    name: "Settings",
+    icon: "Settings",
+    url: ROUTES.ADMIN_ROUTES.settings,
+  },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setOpenSidebar }) => {

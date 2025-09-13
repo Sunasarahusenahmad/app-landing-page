@@ -4,6 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "@/app/styles/admin/pages/login.module.css";
 import { API_ENDPOINTS, ROUTES } from "@/app/lib/constants";
+import { 
+  isMaintenanceMode, 
+  isAccountLocked, 
+  handleFailedLoginAttempt, 
+  resetFailedLoginAttempts,
+  getRemainingLoginAttempts 
+} from "@/app/lib/authUtils";
+
 const port = process.env.NEXT_PUBLIC_APP_URL;
 
 export default function AdminLogin() {
@@ -14,10 +22,30 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [lockoutInfo, setLockoutInfo] = useState({ locked: false, remainingTime: 0 });
+  const [remainingAttempts, setRemainingAttempts] = useState(5);
   const router = useRouter();
 
-  // Check if already logged in
+  // Check system status and authentication
   useEffect(() => {
+    // Check maintenance mode
+    if (isMaintenanceMode()) {
+      setError("System is currently under maintenance. Please try again later.");
+      return;
+    }
+
+    // Check if account is locked
+    const lockStatus = isAccountLocked();
+    if (lockStatus.locked) {
+      setLockoutInfo({ locked: true, remainingTime: lockStatus.remainingTime || 0 });
+      setError(`Account is locked due to multiple failed login attempts. Please try again in ${lockStatus.remainingTime} minutes.`);
+      return;
+    }
+
+    // Update remaining attempts
+    setRemainingAttempts(getRemainingLoginAttempts());
+
+    // Check if already logged in
     const token = localStorage.getItem("adminToken");
     const isLoggedIn = localStorage.getItem("adminLoggedIn");
     if (token && isLoggedIn === "true") {
@@ -25,10 +53,46 @@ export default function AdminLogin() {
     }
   }, [router]);
 
+  // Countdown timer for account lockout
+  useEffect(() => {
+    if (lockoutInfo.locked && lockoutInfo.remainingTime > 0) {
+      const timer = setInterval(() => {
+        setLockoutInfo(prev => {
+          const newTime = prev.remainingTime - 1;
+          if (newTime <= 0) {
+            setError("");
+            setLockoutInfo({ locked: false, remainingTime: 0 });
+            setRemainingAttempts(getRemainingLoginAttempts());
+            return { locked: false, remainingTime: 0 };
+          }
+          setError(`Account is locked. Please try again in ${newTime} minutes.`);
+          return { ...prev, remainingTime: newTime };
+        });
+      }, 60000); // Update every minute
+
+      return () => clearInterval(timer);
+    }
+  }, [lockoutInfo.locked, lockoutInfo.remainingTime]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    // Check maintenance mode before submission
+    if (isMaintenanceMode()) {
+      setError("System is currently under maintenance. Please try again later.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Check if account is locked
+    const lockStatus = isAccountLocked();
+    if (lockStatus.locked) {
+      setError(`Account is locked. Please try again in ${lockStatus.remainingTime} minutes.`);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${port}/${API_ENDPOINTS.adminLogin}`, {
@@ -46,6 +110,9 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok && data.status === 200) {
+        // Reset failed login attempts on successful login
+        resetFailedLoginAttempts();
+        
         // Store authentication data
         localStorage.setItem("adminToken", data.data.token);
         localStorage.setItem("adminLoggedIn", "true");
@@ -60,8 +127,22 @@ export default function AdminLogin() {
         // Redirect to dashboard
         router.push(ROUTES.ADMIN_ROUTES.dashboard);
       } else {
-        // Handle API error response
-        setError(data.message || "Invalid email or password");
+        // Handle failed login attempt
+        const attemptResult = handleFailedLoginAttempt();
+        
+        if (attemptResult.isLocked) {
+          setLockoutInfo({ locked: true, remainingTime: 15 });
+          setError("Account has been locked due to multiple failed login attempts. Please try again in 15 minutes.");
+        } else {
+          setRemainingAttempts(attemptResult.remainingAttempts);
+          setError(
+            `${data.message || "Invalid email or password"}. ${
+              attemptResult.remainingAttempts > 0 
+                ? `${attemptResult.remainingAttempts} attempts remaining.`
+                : ""
+            }`
+          );
+        }
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -83,6 +164,26 @@ export default function AdminLogin() {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
+  // Show maintenance message if system is in maintenance mode
+  if (isMaintenanceMode()) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loginCard}>
+          <div className={styles.header}>
+            <div className={styles.logo}>
+              <h1 className={styles.logoText}>Gadiyo</h1>
+              <p className={styles.logoSubtext}>Admin Portal</p>
+            </div>
+          </div>
+          <div className={styles.maintenanceMessage}>
+            <h2>System Under Maintenance</h2>
+            <p>The admin portal is currently under maintenance. Please check back later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -108,6 +209,7 @@ export default function AdminLogin() {
               className={styles.input}
               placeholder="Enter your email"
               required
+              disabled={lockoutInfo.locked}
             />
           </div>
 
@@ -125,12 +227,14 @@ export default function AdminLogin() {
                 className={styles.passwordInput}
                 placeholder="Enter your password"
                 required
+                disabled={lockoutInfo.locked}
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
                 className={styles.passwordToggle}
                 aria-label={showPassword ? "Hide password" : "Show password"}
+                disabled={lockoutInfo.locked}
               >
                 {showPassword ? (
                   <svg
@@ -171,6 +275,24 @@ export default function AdminLogin() {
             </div>
           </div>
 
+          {/* Show remaining attempts if not locked */}
+          {!lockoutInfo.locked && remainingAttempts < 5 && (
+            <div className={styles.attemptWarning}>
+              <svg
+                className={styles.warningIcon}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Warning: {remainingAttempts} login attempts remaining
+            </div>
+          )}
+
           {error && (
             <div className={styles.error}>
               <svg
@@ -190,10 +312,10 @@ export default function AdminLogin() {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || lockoutInfo.locked}
             className={`${styles.submitButton} ${
               isLoading ? styles.loading : ""
-            }`}
+            } ${lockoutInfo.locked ? styles.disabled : ""}`}
           >
             {isLoading ? (
               <>
@@ -207,6 +329,8 @@ export default function AdminLogin() {
                 </svg>
                 Signing in...
               </>
+            ) : lockoutInfo.locked ? (
+              `Locked (${lockoutInfo.remainingTime}m remaining)`
             ) : (
               "Sign In"
             )}

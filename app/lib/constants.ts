@@ -4,6 +4,7 @@ export const ROUTES = {
     dashboard: '/admin',
     contacts: '/admin/contacts',
     blogs: '/admin/blogs',
+    settings: '/admin/settings',
   },
   CLIENT_ROUTES: {
     userlanding: '/',
