@@ -59,7 +59,10 @@
 
 /* Form */
 .form {
-    space-y: 24px;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .formGroup {

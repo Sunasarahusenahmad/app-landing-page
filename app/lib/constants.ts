@@ -4,6 +4,7 @@ export const ROUTES = {
     dashboard: '/admin',
     contacts: '/admin/contacts',
     blogs: '/admin/blogs',
+    subscriptionPlan: '/admin/subscription-plan',
     settings: '/admin/settings',
   },
   CLIENT_ROUTES: {
@@ -19,5 +20,9 @@ export const API_ENDPOINTS = {
   contactList: 'admin/contact',
   updateContactStatus: 'admin/contact/change-status',
   viewContactDetails: 'admin/contact',
-  deleteContact: 'admin/contact'
+  deleteContact: 'admin/contact',
+  addPlan: 'admin/plan',
+  getPlans: 'admin/plan',
+  transactionHistory: 'admin/plan/trx/history',
+  updatePlan: 'admin/plan', // append /:id
 }

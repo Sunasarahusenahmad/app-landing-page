@@ -1,0 +1,371 @@
+/* Container */
+.container {
+    padding: 24px;
+}
+
+/* Header */
+.header {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Tabs */
+.tabsContainer {
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabsList {
+    display: flex;
+    gap: 24px;
+}
+
+.tab {
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: #111827;
+}
+
+.activeTab {
+    color: #fab12f;
+    font-weight: 600;
+}
+
+.activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #fab12f;
+}
+
+/* Plans Grid */
+.plansGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.planCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.planCard:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border-color: #fab12f;
+}
+
+.planHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.planName {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.planPrice {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fab12f;
+}
+
+.planPeriod {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.planDescription {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.featuresList {
+    margin-bottom: 24px;
+    padding: 0;
+    list-style: none;
+}
+
+.featureItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.checkIcon {
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+.cardActions {
+    display: flex;
+    gap: 12px;
+}
+
+.editButton,
+.deleteButton {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.editButton {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.editButton:hover {
+    background-color: #e5e7eb;
+}
+
+.deleteButton {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.deleteButton:hover {
+    background-color: #fee2e2;
+}
+
+/* Add Button */
+.addButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #fab12f, #E6CFA5);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.addButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styles (reused/adapted from contacts) */
+.tableCard {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.tableHeader {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tableCell {
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+    color: #374151;
+}
+
+.statusBadge {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.statusSuccess {
+    background-color: #d1fae5;
+    color: #047857;
+}
+
+.statusPending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.statusFailed {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    color: #374151;
+    background-color: #f3f4f6;
+}
+
+.modalContent {
+    padding: 24px;
+}
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modalFooter {
+    padding: 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.cancelButton {
+    padding: 10px 20px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.saveButton {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #fab12f, #E6CFA5);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Responsive Fixes */
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .addButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal {
+        width: calc(100% - 32px);
+        /* Prevent touching edges */
+        margin: 16px;
+    }
+}

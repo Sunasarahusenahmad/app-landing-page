@@ -29,8 +29,14 @@ const navs: NavItem[] = [
     icon: "StickyNote",
     url: ROUTES.ADMIN_ROUTES.blogs,
   },
-    {
+  {
     id: 4,
+    name: "Subscription Plan",
+    icon: "CreditCard",
+    url: ROUTES.ADMIN_ROUTES.subscriptionPlan,
+  },
+  {
+    id: 5,
     name: "Settings",
     icon: "Settings",
     url: ROUTES.ADMIN_ROUTES.settings,

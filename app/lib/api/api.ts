@@ -5,14 +5,13 @@ interface RequestOptions extends RequestInit {
     params?: Record<string, string>;
 }
 
-const getHeaders = () => {
-    // Basic headers - we don't force Content-Type here anymore, let request method handle it
-    const headers = new Headers();
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {};
     // Add Auth token if exists
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('adminToken');
         if (token) {
-            headers.set('Authorization', `Bearer ${token}`);
+            headers['Authorization'] = `Bearer ${token}`;
         }
     }
     return headers;
