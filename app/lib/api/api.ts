@@ -6,7 +6,8 @@ interface RequestOptions extends RequestInit {
 }
 
 const getHeaders = () => {
-    const headers = new Headers(API_CONFIG.HEADERS);
+    // Basic headers - we don't force Content-Type here anymore, let request method handle it
+    const headers = new Headers();
     // Add Auth token if exists
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('adminToken');
@@ -68,14 +69,54 @@ export const api = {
     get: <T>(endpoint: string, options?: RequestOptions) =>
         request<T>(endpoint, { ...options, method: 'GET' }),
 
-    post: <T>(endpoint: string, body: any, options?: RequestOptions) =>
-        request<T>(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) }),
+    post: <T>(endpoint: string, body: any, options: RequestOptions = {}) => {
+        const isFormData = body instanceof FormData || body instanceof URLSearchParams;
+        const headers = options.headers ? new Headers(options.headers) : new Headers();
 
-    put: <T>(endpoint: string, body: any, options?: RequestOptions) =>
-        request<T>(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) }),
+        // If content-type is explicitly set, use it (or don't set default JSON)
+        if (!headers.has('Content-Type') && !isFormData) {
+            headers.set('Content-Type', 'application/json');
+        }
 
-    patch: <T>(endpoint: string, body: any, options?: RequestOptions) =>
-        request<T>(endpoint, { ...options, method: 'PATCH', body: JSON.stringify(body) }),
+        return request<T>(endpoint, {
+            ...options,
+            method: 'POST',
+            body: isFormData ? body : JSON.stringify(body),
+            headers: Object.fromEntries(headers.entries()) // Convert back to plain object for fetch
+        });
+    },
+
+    put: <T>(endpoint: string, body: any, options: RequestOptions = {}) => {
+        const isFormData = body instanceof FormData || body instanceof URLSearchParams;
+        const headers = options.headers ? new Headers(options.headers) : new Headers();
+
+        if (!headers.has('Content-Type') && !isFormData) {
+            headers.set('Content-Type', 'application/json');
+        }
+
+        return request<T>(endpoint, {
+            ...options,
+            method: 'PUT',
+            body: isFormData ? body : JSON.stringify(body),
+            headers: Object.fromEntries(headers.entries())
+        });
+    },
+
+    patch: <T>(endpoint: string, body: any, options: RequestOptions = {}) => {
+        const isFormData = body instanceof FormData || body instanceof URLSearchParams;
+        const headers = options.headers ? new Headers(options.headers) : new Headers();
+
+        if (!headers.has('Content-Type') && !isFormData) {
+            headers.set('Content-Type', 'application/json');
+        }
+
+        return request<T>(endpoint, {
+            ...options,
+            method: 'PATCH',
+            body: isFormData ? body : JSON.stringify(body),
+            headers: Object.fromEntries(headers.entries())
+        });
+    },
 
     delete: <T>(endpoint: string, options?: RequestOptions) =>
         request<T>(endpoint, { ...options, method: 'DELETE' }),
