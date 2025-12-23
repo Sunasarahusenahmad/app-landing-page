@@ -1,4 +1,5 @@
 import RouteProtection from "@/app/components/admin/RouteProtection";
+import ToastProvider from "@/app/components/providers/ToastProvider";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,5 +19,10 @@ export default function AdminRootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <RouteProtection>{children}</RouteProtection>;
+  return (
+    <RouteProtection>
+      <ToastProvider />
+      {children}
+    </RouteProtection>
+  );
 }

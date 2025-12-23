@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "@/app/styles/admin/pages/login.module.css";
 import { API_ENDPOINTS, ROUTES } from "@/app/lib/constants";
-import { 
-  isMaintenanceMode, 
-  isAccountLocked, 
-  handleFailedLoginAttempt, 
+import {
+  isMaintenanceMode,
+  isAccountLocked,
+  handleFailedLoginAttempt,
   resetFailedLoginAttempts,
-  getRemainingLoginAttempts 
+  getRemainingLoginAttempts
 } from "@/app/lib/authUtils";
 
 const port = process.env.NEXT_PUBLIC_APP_URL;
@@ -107,12 +107,21 @@ export default function AdminLogin() {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        // If not JSON, it's likely a server error page (500/502/503/404)
+        const text = await response.text();
+        console.error("Non-JSON response received:", text);
+        throw new Error(`Server returned status ${response.status}: ${response.statusText}`);
+      }
 
       if (response.ok && data.status === 200) {
         // Reset failed login attempts on successful login
         resetFailedLoginAttempts();
-        
+
         // Store authentication data
         localStorage.setItem("adminToken", data.data.token);
         localStorage.setItem("adminLoggedIn", "true");
@@ -129,17 +138,16 @@ export default function AdminLogin() {
       } else {
         // Handle failed login attempt
         const attemptResult = handleFailedLoginAttempt();
-        
+
         if (attemptResult.isLocked) {
           setLockoutInfo({ locked: true, remainingTime: 15 });
           setError("Account has been locked due to multiple failed login attempts. Please try again in 15 minutes.");
         } else {
           setRemainingAttempts(attemptResult.remainingAttempts);
           setError(
-            `${data.message || "Invalid email or password"}. ${
-              attemptResult.remainingAttempts > 0 
-                ? `${attemptResult.remainingAttempts} attempts remaining.`
-                : ""
+            `${data.message || "Invalid email or password"}. ${attemptResult.remainingAttempts > 0
+              ? `${attemptResult.remainingAttempts} attempts remaining.`
+              : ""
             }`
           );
         }
@@ -313,9 +321,8 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={isLoading || lockoutInfo.locked}
-            className={`${styles.submitButton} ${
-              isLoading ? styles.loading : ""
-            } ${lockoutInfo.locked ? styles.disabled : ""}`}
+            className={`${styles.submitButton} ${isLoading ? styles.loading : ""
+              } ${lockoutInfo.locked ? styles.disabled : ""}`}
           >
             {isLoading ? (
               <>
