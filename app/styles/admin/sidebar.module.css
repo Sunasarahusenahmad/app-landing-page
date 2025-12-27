@@ -50,7 +50,7 @@
 }
 
 .nav_list a.active {
-    border-left: 3px solid #fab12f;
+    border-left: 3px solid var(--primary-color);
     color: #000000;
 }
 

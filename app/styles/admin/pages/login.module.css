@@ -4,7 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #fab12f 0%, #E6CFA5 100%);
+    background: var(--primary-color);
     padding: 20px;
 }
 
@@ -42,12 +42,11 @@
 .logoText {
     font-size: 32px;
     font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 4px 0;
-    background: linear-gradient(135deg, #fab12f, #E6CFA5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary-color);
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: initial;
+    background-clip: unset;
 }
 
 .logoSubtext {
@@ -185,7 +184,7 @@
 .submitButton {
     width: 100%;
     padding: 12px 24px;
-    background: linear-gradient(135deg, #fab12f, #E6CFA5);
+    background: var(--primary-color);
     color: white;
     border: none;
     border-radius: 8px;
@@ -200,6 +199,7 @@
 }
 
 .submitButton:hover:not(.loading) {
+    background: var(--primary-hover);
     transform: translateY(-1px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }

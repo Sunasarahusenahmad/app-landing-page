@@ -3,13 +3,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Users, 
-  FileText, 
-  MessageSquare, 
-  Car, 
-  Calendar, 
-  TrendingUp, 
+import {
+  Users,
+  FileText,
+  MessageSquare,
+  Car,
+  Calendar,
+  TrendingUp,
   Eye,
   Phone,
   Mail,
@@ -140,18 +140,18 @@ const AdminDashboard: React.FC = () => {
       }
 
       const data: ApiResponse = await response.json();
-      
+
       if (data.status === 200) {
         const contacts = data.data.result;
         setRecentContacts(contacts.slice(0, 5)); // Get latest 5 contacts
-        
+
         // Calculate contact stats
         const totalContacts = data.data.pagination.totalRecords;
         const today = new Date().toDateString();
-        const newContactsToday = contacts.filter(contact => 
+        const newContactsToday = contacts.filter(contact =>
           new Date(contact.created_at).toDateString() === today
         ).length;
-        const unreadContacts = contacts.filter(contact => 
+        const unreadContacts = contacts.filter(contact =>
           contact.status === 1 // Assuming 1 is "new" status
         ).length;
 
@@ -230,7 +230,7 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
-      
+
       // Initialize with default values
       setStats({
         totalContacts: 0,
@@ -251,7 +251,7 @@ const AdminDashboard: React.FC = () => {
 
       // Fetch real contact data
       await fetchContacts();
-      
+
       setLoading(false);
     };
 
@@ -325,7 +325,7 @@ const AdminDashboard: React.FC = () => {
       change: 18.9,
       changeLabel: 'vs last month',
       icon: TrendingUp,
-      color: '#fab12f',
+      color: 'var(--primary-color)',
       bgColor: '#fefce8'
     },
     {
@@ -460,7 +460,7 @@ const AdminDashboard: React.FC = () => {
           return (
             <div key={index} className={styles.statCard}>
               <div className={styles.statCardHeader}>
-                <div 
+                <div
                   className={styles.statIcon}
                   style={{ backgroundColor: card.bgColor }}
                 >
@@ -472,7 +472,7 @@ const AdminDashboard: React.FC = () => {
                   ) : (
                     <ArrowDownRight size={16} className={styles.changeIconNegative} />
                   )}
-                  <span 
+                  <span
                     className={card.change > 0 ? styles.changePositive : styles.changeNegative}
                   >
                     {card.change > 0 ? '+' : ''}{card.change}%
@@ -497,8 +497,8 @@ const AdminDashboard: React.FC = () => {
             {quickStats.map((stat, index) => {
               const IconComponent = stat.icon;
               return (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className={`${styles.quickStat} ${stat.urgent ? styles.quickStatUrgent : ''}`}
                 >
                   <div className={styles.quickStatIcon}>
@@ -518,7 +518,7 @@ const AdminDashboard: React.FC = () => {
         <div className={styles.activityCard}>
           <div className={styles.activityHeader}>
             <h2 className={styles.sectionTitle}>Recent Activity</h2>
-            <button 
+            <button
               className={styles.viewAllButton}
               onClick={handleViewContacts}
             >
@@ -529,8 +529,8 @@ const AdminDashboard: React.FC = () => {
             {recentActivity.map((activity) => {
               const IconComponent = getActivityIcon(activity.type);
               return (
-                <div 
-                  key={activity.id} 
+                <div
+                  key={activity.id}
                   className={`${styles.activityItem} ${activity.type === 'contact' ? styles.clickable : ''}`}
                   onClick={() => handleActivityClick(activity)}
                 >
@@ -542,7 +542,7 @@ const AdminDashboard: React.FC = () => {
                     <p className={styles.activityTime}>{activity.time}</p>
                   </div>
                   {activity.status && (
-                    <div 
+                    <div
                       className={styles.activityStatus}
                       style={{ backgroundColor: getStatusColor(activity.status) }}
                     >
@@ -565,7 +565,7 @@ const AdminDashboard: React.FC = () => {
           <div className={styles.actionCardContent}>
             <h3>Manage Contacts</h3>
             <p>View and respond to customer contacts</p>
-            <button 
+            <button
               className={styles.actionButton}
               onClick={handleViewContacts}
             >

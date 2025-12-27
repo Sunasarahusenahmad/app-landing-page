@@ -69,12 +69,12 @@
 }
 
 .navItem.active {
-  background: #fab12f;
+  background: var(--primary-color);
   color: white;
 }
 
 .navItem.active:hover {
-  background: #f59e0b;
+  background: var(--primary-hover);
 }
 
 .navIcon {
@@ -285,7 +285,7 @@
 }
 
 .primaryButton {
-  background: #fab12f;
+  background: var(--primary-color);
   color: white;
   border: none;
   padding: 0.875rem 2rem;
@@ -297,7 +297,7 @@
 }
 
 .primaryButton:hover {
-  background: #f59e0b;
+  background: var(--primary-hover);
   transform: translateY(-1px);
 }
 
@@ -386,53 +386,53 @@
   .settingsContainer {
     padding: 1rem;
   }
-  
+
   .settingsLayout {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .settingsSidebar {
     order: 2;
   }
-  
+
   .settingsMain {
     order: 1;
   }
-  
+
   .settingsNav {
     flex-direction: row;
     overflow-x: auto;
     gap: 0.5rem;
   }
-  
+
   .navItem {
     white-space: nowrap;
     min-width: fit-content;
   }
-  
+
   .formGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .tabContent {
     padding: 1.5rem;
   }
-  
+
   .addIpGroup {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .buttonGroup {
     flex-direction: column;
   }
-  
+
   .primaryButton,
   .secondaryButton {
     width: 100%;
   }
-  
+
   .themeButtons {
     flex-wrap: wrap;
   }
@@ -442,16 +442,16 @@
   .pageTitle {
     font-size: 2rem;
   }
-  
+
   .sectionTitle {
     font-size: 1.5rem;
   }
-  
+
   .navItem {
     padding: 0.75rem;
     font-size: 0.875rem;
   }
-  
+
   .navIcon {
     font-size: 1rem;
   }

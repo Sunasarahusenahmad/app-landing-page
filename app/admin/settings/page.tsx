@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from "@/app/styles/admin/pages/settings.module.css";
+import ConfirmModal from "@/app/components/admin/ui/ConfirmModal";
+import Input from "@/app/components/admin/ui/Input";
+import { useTheme } from "@/app/context/ThemeContext";
 
 interface UserData {
   id: number;
@@ -37,6 +40,7 @@ interface SecuritySettings {
 }
 
 const AdminSettings: React.FC = () => {
+  const { theme, setTheme, primaryColor, setPrimaryColor } = useTheme();
   const [activeTab, setActiveTab] = useState<string>('profile');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserData>({
@@ -87,18 +91,32 @@ const AdminSettings: React.FC = () => {
     { id: 'appearance', label: 'Appearance', icon: '🎨' },
   ];
 
-  const handleSave = async (section: string) => {
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [pendingSection, setPendingSection] = useState<string | null>(null);
+
+  const handleSave = (section: string) => {
+    setPendingSection(section);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSave = async () => {
+    if (!pendingSection) return;
+
     setIsLoading(true);
+    setShowConfirmModal(false);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(`Saving ${section} settings...`);
-      alert(`${section} settings saved successfully!`);
+      console.log(`Saving ${pendingSection} settings...`);
+      // Use different type for success if available, or just reuse the modal logic if needed
+      // But typically we show a toast. For now, matching existing behavior with alert but after confirmation.
+      alert(`${pendingSection} settings saved successfully!`);
     } catch (error) {
       console.error('Error saving settings:', error);
       alert('Error saving settings. Please try again.');
     } finally {
       setIsLoading(false);
+      setPendingSection(null);
     }
   };
 
@@ -223,7 +241,7 @@ const AdminSettings: React.FC = () => {
             type="password"
             className={styles.input}
             value={passwords.currentPassword}
-            onChange={(e) => setPasswords(prev => ({...prev, currentPassword: e.target.value}))}
+            onChange={(e) => setPasswords(prev => ({ ...prev, currentPassword: e.target.value }))}
           />
         </div>
         <div className={styles.inputGroup}>
@@ -232,7 +250,7 @@ const AdminSettings: React.FC = () => {
             type="password"
             className={styles.input}
             value={passwords.newPassword}
-            onChange={(e) => setPasswords(prev => ({...prev, newPassword: e.target.value}))}
+            onChange={(e) => setPasswords(prev => ({ ...prev, newPassword: e.target.value }))}
           />
         </div>
         <div className={styles.inputGroup}>
@@ -241,13 +259,13 @@ const AdminSettings: React.FC = () => {
             type="password"
             className={styles.input}
             value={passwords.confirmPassword}
-            onChange={(e) => setPasswords(prev => ({...prev, confirmPassword: e.target.value}))}
+            onChange={(e) => setPasswords(prev => ({ ...prev, confirmPassword: e.target.value }))}
           />
         </div>
       </div>
 
       <div className={styles.buttonGroup}>
-        <button 
+        <button
           className={styles.primaryButton}
           onClick={() => handleSave('profile')}
           disabled={isLoading}
@@ -312,7 +330,7 @@ const AdminSettings: React.FC = () => {
         </div>
       </div>
       <div className={styles.buttonGroup}>
-        <button 
+        <button
           className={styles.primaryButton}
           onClick={() => handleSave('notifications')}
           disabled={isLoading}
@@ -377,7 +395,7 @@ const AdminSettings: React.FC = () => {
             value={newIpAddress}
             onChange={(e) => setNewIpAddress(e.target.value)}
           />
-          <button 
+          <button
             className={styles.secondaryButton}
             onClick={addIpAddress}
             type="button"
@@ -389,7 +407,7 @@ const AdminSettings: React.FC = () => {
           {securitySettings.ipWhitelist.map((ip, index) => (
             <div key={index} className={styles.ipItem}>
               <span>{ip}</span>
-              <button 
+              <button
                 className={styles.removeButton}
                 onClick={() => removeIpAddress(ip)}
                 type="button"
@@ -402,7 +420,7 @@ const AdminSettings: React.FC = () => {
       </div>
 
       <div className={styles.buttonGroup}>
-        <button 
+        <button
           className={styles.primaryButton}
           onClick={() => handleSave('security')}
           disabled={isLoading}
@@ -468,7 +486,7 @@ const AdminSettings: React.FC = () => {
       </div>
 
       <div className={styles.buttonGroup}>
-        <button 
+        <button
           className={styles.primaryButton}
           onClick={() => handleSave('system')}
           disabled={isLoading}
@@ -486,25 +504,60 @@ const AdminSettings: React.FC = () => {
         <div className={styles.themeOption}>
           <h3>Theme</h3>
           <div className={styles.themeButtons}>
-            <button className={`${styles.themeButton} ${styles.active}`}>Light</button>
-            <button className={styles.themeButton}>Dark</button>
-            <button className={styles.themeButton}>Auto</button>
+            <button
+              className={`${styles.themeButton} ${theme === 'light' ? styles.active : ''}`}
+              onClick={() => setTheme('light')}
+            >
+              Light
+            </button>
+            <button
+              className={`${styles.themeButton} ${theme === 'dark' ? styles.active : ''}`}
+              onClick={() => setTheme('dark')}
+            >
+              Dark
+            </button>
+            <button
+              className={`${styles.themeButton} ${theme === 'auto' ? styles.active : ''}`}
+              onClick={() => setTheme('auto')}
+            >
+              Auto
+            </button>
           </div>
         </div>
         <div className={styles.colorOption}>
           <h3>Primary Color</h3>
           <div className={styles.colorPreview}>
-            <div 
-              className={styles.colorSwatch} 
-              style={{ backgroundColor: '#fab12f' }}
-            ></div>
-            <span>#fab12f</span>
+            <input
+              type="color"
+              value={primaryColor}
+              onChange={(e) => setPrimaryColor(e.target.value)}
+              className="w-10 h-10 p-0 border-0 rounded cursor-pointer"
+            />
+            <div className="flex items-center gap-2">
+              <Input
+                value={primaryColor}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+                placeholder="#000000"
+                maxLength={7}
+                className="w-24 uppercase font-mono"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2 mt-2">
+            {['#fab12f', '#3b82f6', '#ef4444', '#10b981', '#8b5cf6'].map((color) => (
+              <button
+                key={color}
+                onClick={() => setPrimaryColor(color)}
+                className={`w-6 h-6 rounded-full border border-gray-200 ${primaryColor === color ? 'ring-2 ring-offset-1 ring-gray-400' : ''}`}
+                style={{ backgroundColor: color }}
+              />
+            ))}
           </div>
         </div>
       </div>
 
       <div className={styles.buttonGroup}>
-        <button 
+        <button
           className={styles.primaryButton}
           onClick={() => handleSave('appearance')}
           disabled={isLoading}
@@ -559,6 +612,15 @@ const AdminSettings: React.FC = () => {
           {renderTabContent()}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        type="confirm"
+        title="Save Changes"
+        message={`Are you sure you want to save changes to ${pendingSection}?`}
+        onConfirm={handleConfirmSave}
+        onCancel={() => setShowConfirmModal(false)}
+      />
     </div>
   );
 };

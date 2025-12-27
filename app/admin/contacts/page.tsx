@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import styles from "@/app/styles/admin/pages/contacts.module.css";
 import ConfirmModal from "@/app/components/admin/ui/ConfirmModal";
+import Input from "@/app/components/admin/ui/Input";
+import Select from "@/app/components/admin/ui/Select";
+import Button from "@/app/components/admin/ui/Button";
+import { Edit, Trash2, X } from "lucide-react";
 const port = process.env.NEXT_PUBLIC_APP_URL;
 
 // Types for contact data
@@ -60,11 +64,20 @@ export default function ContactsPage() {
   const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [contactToDelete, setContactToDelete] = useState<number | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    full_name: "",
+    email: "",
+    phone_number: "",
+    subject: "",
+    message: "",
+    status: 1
+  });
 
   // Status mapping - adjust these based on your API's status values
   const statusMap = {
     1: "new",
-    2: "processing", 
+    2: "processing",
     3: "closed",
   } as const;
 
@@ -84,7 +97,7 @@ export default function ContactsPage() {
     try {
       setIsLoading(true);
       setError("");
-      
+
       const token = getAuthToken();
       if (!token) {
         setError("Authentication token not found. Please login again.");
@@ -104,7 +117,7 @@ export default function ContactsPage() {
       }
 
       const data: ApiResponse = await response.json();
-      
+
       if (data.status === 200) {
         setContacts(data.data.result);
         setPagination(data.data.pagination);
@@ -123,7 +136,7 @@ export default function ContactsPage() {
   const fetchContactDetails = async (contactId: number) => {
     try {
       setIsLoadingDetail(true);
-      
+
       const token = getAuthToken();
       if (!token) {
         setError("Authentication token not found. Please login again.");
@@ -143,9 +156,17 @@ export default function ContactsPage() {
       }
 
       const data: SingleContactResponse = await response.json();
-      
+
       if (data.status === 200) {
         setSelectedContact(data.data);
+        setEditFormData({
+          full_name: data.data.full_name,
+          email: data.data.email,
+          phone_number: data.data.phone_number,
+          subject: data.data.subject,
+          message: data.data.message,
+          status: data.data.status
+        });
       } else {
         throw new Error(data.message || "Failed to fetch contact details");
       }
@@ -154,6 +175,77 @@ export default function ContactsPage() {
       setError("Failed to load contact details. Please try again.");
     } finally {
       setIsLoadingDetail(false);
+    }
+  };
+
+  // Handle Edit Input Change
+  const handleEditInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: name === 'status' ? parseInt(value) : value
+    }));
+  };
+
+  // Handle Update Contact
+  const handleUpdateContact = async () => {
+    if (!selectedContact) return;
+
+    try {
+      setIsUpdating(true);
+      const token = getAuthToken();
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      // 1. Update Details
+      const updateResponse = await fetch(`${port}/admin/contact/${selectedContact.id}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: editFormData.full_name,
+          email: editFormData.email,
+          phone_number: editFormData.phone_number,
+          subject: editFormData.subject,
+          message: editFormData.message
+        }),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update contact details");
+      }
+
+      // 2. Update Status (if changed)
+      if (editFormData.status !== selectedContact.status) {
+        const statusResponse = await fetch(`${port}/admin/contact/change-status/${selectedContact.id}`, {
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: editFormData.status
+          }),
+        });
+
+        if (!statusResponse.ok) {
+          throw new Error("Failed to update status");
+        }
+      }
+
+      // Refresh list
+      await fetchContacts(currentPage);
+      setSelectedContact(null);
+
+    } catch (err) {
+      console.error("Error updating contact:", err);
+      setError("Failed to update contact. Please try again.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -182,17 +274,17 @@ export default function ContactsPage() {
       }
 
       const data = await response.json();
-      
+
       if (data.status === 200) {
         // Update local state
-        setContacts(prev => 
-          prev.map(contact => 
-            contact.id === contactId 
+        setContacts(prev =>
+          prev.map(contact =>
+            contact.id === contactId
               ? { ...contact, status: newStatus }
               : contact
           )
         );
-        
+
         // Update selected contact if it's the same one
         if (selectedContact && selectedContact.id === contactId) {
           setSelectedContact(prev => prev ? { ...prev, status: newStatus } : null);
@@ -211,7 +303,7 @@ export default function ContactsPage() {
     try {
       setIsDeleting(true);
       setError("");
-      
+
       const token = getAuthToken();
       if (!token) {
         setError("Authentication token not found. Please login again.");
@@ -231,14 +323,14 @@ export default function ContactsPage() {
       }
 
       const data = await response.json();
-      
+
       if (data.status === 200) {
         // Remove from local state
         setContacts(prev => prev.filter(contact => contact.id !== contactId));
-        
+
         // Close modal if the deleted contact was selected
         setSelectedContact(null);
-        
+
         // Refresh the list to get updated pagination
         fetchContacts(currentPage);
       } else {
@@ -331,25 +423,25 @@ export default function ContactsPage() {
   }
 
   // Handler to show delete confirmation modal
-const handleDeleteClick = (contactId: number) => {
-  setContactToDelete(contactId);
-  setShowDeleteModal(true);
-};
+  const handleDeleteClick = (contactId: number) => {
+    setContactToDelete(contactId);
+    setShowDeleteModal(true);
+  };
 
-// Handler for confirming delete
-const handleDeleteConfirm = async () => {
-  if (contactToDelete) {
-    await handleDeleteContact(contactToDelete);
+  // Handler for confirming delete
+  const handleDeleteConfirm = async () => {
+    if (contactToDelete) {
+      await handleDeleteContact(contactToDelete);
+      setShowDeleteModal(false);
+      setContactToDelete(null);
+    }
+  };
+
+  // Handler for canceling delete
+  const handleDeleteCancel = () => {
     setShowDeleteModal(false);
     setContactToDelete(null);
-  }
-};
-
-// Handler for canceling delete
-const handleDeleteCancel = () => {
-  setShowDeleteModal(false);
-  setContactToDelete(null);
-};
+  };
 
   return (
     <div className={styles.container}>
@@ -477,24 +569,35 @@ const handleDeleteCancel = () => {
                   </td>
                   <td className={styles.tableCell}>
                     <div className={styles.actions}>
-                      <button
-                        onClick={() => handleViewContact(contact)}
-                        className={styles.viewButton}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedContact(contact);
+                          setEditFormData({
+                            full_name: contact.full_name,
+                            email: contact.email,
+                            phone_number: contact.phone_number,
+                            subject: contact.subject,
+                            message: contact.message,
+                            status: contact.status
+                          });
+                          // Fetch latest details to ensure freshness
+                          fetchContactDetails(contact.id);
+                        }}
                         disabled={isLoadingDetail}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                       >
-                        {isLoadingDetail ? "Loading..." : "View"}
-                      </button>
-                      <select
-                        value={contact.status}
-                        onChange={(e) =>
-                          updateContactStatus(contact.id, parseInt(e.target.value))
-                        }
-                        className={styles.statusSelect}
+                        <Edit size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(contact.id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
-                        <option value={1}>New</option>
-                        <option value={2}>Processing</option>
-                        <option value={3}>Closed</option>
-                      </select>
+                        <Trash2 size={16} />
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -515,9 +618,8 @@ const handleDeleteCancel = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={!pagination.previous}
-                className={`${styles.paginationButton} ${
-                  !pagination.previous ? styles.disabled : ""
-                }`}
+                className={`${styles.paginationButton} ${!pagination.previous ? styles.disabled : ""
+                  }`}
               >
                 Previous
               </button>
@@ -526,9 +628,8 @@ const handleDeleteCancel = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`${styles.paginationButton} ${
-                      currentPage === page ? styles.activePage : ""
-                    }`}
+                    className={`${styles.paginationButton} ${currentPage === page ? styles.activePage : ""
+                      }`}
                   >
                     {page}
                   </button>
@@ -537,9 +638,8 @@ const handleDeleteCancel = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.pages))}
                 disabled={!pagination.next}
-                className={`${styles.paginationButton} ${
-                  !pagination.next ? styles.disabled : ""
-                }`}
+                className={`${styles.paginationButton} ${!pagination.next ? styles.disabled : ""
+                  }`}
               >
                 Next
               </button>
@@ -553,121 +653,96 @@ const handleDeleteCancel = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>Contact Details</h3>
+              <h3 className={styles.modalTitle}>Update Contact Details</h3>
               <button
                 onClick={() => setSelectedContact(null)}
                 className={styles.closeButton}
               >
-                <svg
-                  className={styles.closeIcon}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <X size={20} />
               </button>
             </div>
+
             <div className={styles.modalContent}>
               <div className={styles.modalGrid}>
                 <div className={styles.modalField}>
-                  <label className={styles.modalLabel}>Full Name</label>
-                  <p className={styles.modalValue}>
-                    {selectedContact.full_name}
-                  </p>
+                  <Input
+                    label="Full Name"
+                    name="full_name"
+                    value={editFormData.full_name}
+                    onChange={handleEditInputChange}
+                    fullWidth
+                  />
                 </div>
                 <div className={styles.modalField}>
-                  <label className={styles.modalLabel}>Email</label>
-                  <p className={styles.modalValue}>{selectedContact.email}</p>
+                  <Input
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={editFormData.email}
+                    onChange={handleEditInputChange}
+                    fullWidth
+                  />
                 </div>
                 <div className={styles.modalField}>
-                  <label className={styles.modalLabel}>Phone Number</label>
-                  <p className={styles.modalValue}>
-                    {selectedContact.phone_number}
-                  </p>
+                  <Input
+                    label="Phone Number"
+                    name="phone_number"
+                    value={editFormData.phone_number}
+                    onChange={handleEditInputChange}
+                    fullWidth
+                  />
                 </div>
                 <div className={styles.modalField}>
-                  <label className={styles.modalLabel}>Date</label>
-                  <p className={styles.modalValue}>
-                    {formatDate(selectedContact.created_at)}
-                  </p>
+                  <Select
+                    label="Status"
+                    name="status"
+                    value={editFormData.status}
+                    onChange={handleEditInputChange}
+                    options={[
+                      { value: 1, label: "New" },
+                      { value: 2, label: "Processing" },
+                      { value: 3, label: "Closed" }
+                    ]}
+                  />
                 </div>
               </div>
+
               <div className={styles.modalField}>
-                <label className={styles.modalLabel}>Subject</label>
-                <p className={styles.modalValue}>{selectedContact.subject}</p>
+                <Input
+                  label="Subject"
+                  name="subject"
+                  value={editFormData.subject}
+                  onChange={handleEditInputChange}
+                  fullWidth
+                />
               </div>
+
               <div className={styles.modalField}>
                 <label className={styles.modalLabel}>Message</label>
-                <p className={styles.modalMessage}>{selectedContact.message}</p>
-              </div>
-              <div className={styles.modalField}>
-                <label className={styles.modalLabel}>Status</label>
-                <span
-                  className={`${styles.statusBadge} ${getStatusClass(selectedContact.status)}`}
-                >
-                  {getStatusText(selectedContact.status)}
-                </span>
+                <textarea
+                  name="message"
+                  value={editFormData.message}
+                  onChange={handleEditInputChange}
+                  className={styles.searchInput}
+                  style={{ width: '100%', minHeight: '100px', marginTop: '0.5rem' }}
+                />
               </div>
             </div>
+
             <div className={styles.modalFooter}>
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setSelectedContact(null)}
-                className={styles.modalCancelButton}
               >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  updateContactStatus(selectedContact.id, 3); // Mark as closed
-                  setSelectedContact(null);
-                }}
-                className={styles.modalConfirmButton}
-                disabled={isDeleting}
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleUpdateContact}
+                isLoading={isUpdating}
               >
-                Mark as Closed
-              </button>
-              <button
-                onClick={() => handleDeleteClick(selectedContact.id)}
-                className={styles.modalDeleteButton}
-                disabled={isDeleting}
-              >
-                {isDeleting ? (
-                  <>
-                    <svg className={styles.spinner} viewBox="0 0 24 24">
-                      <circle
-                        className={styles.spinnerCircle}
-                        cx="12"
-                        cy="12"
-                        r="10"
-                      />
-                    </svg>
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className={styles.deleteIcon}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    Delete Contact
-                  </>
-                )}
-              </button>
+                Save Changes
+              </Button>
             </div>
           </div>
         </div>
@@ -684,30 +759,32 @@ const handleDeleteCancel = () => {
       />
 
       {/* Empty State */}
-      {!isLoading && filteredContacts.length === 0 && (
-        <div className={styles.emptyState}>
-          <svg
-            className={styles.emptyIcon}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2m-2 0v4a1 1 0 001 1h1"
-            />
-          </svg>
-          <h3 className={styles.emptyTitle}>No contacts found</h3>
-          <p className={styles.emptySubtitle}>
-            {searchTerm || statusFilter !== "all" 
-              ? "Try adjusting your search or filter criteria."
-              : "No contacts have been submitted yet."
-            }
-          </p>
-        </div>
-      )}
-    </div>
+      {
+        !isLoading && filteredContacts.length === 0 && (
+          <div className={styles.emptyState}>
+            <svg
+              className={styles.emptyIcon}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2m-2 0v4a1 1 0 001 1h1"
+              />
+            </svg>
+            <h3 className={styles.emptyTitle}>No contacts found</h3>
+            <p className={styles.emptySubtitle}>
+              {searchTerm || statusFilter !== "all"
+                ? "Try adjusting your search or filter criteria."
+                : "No contacts have been submitted yet."
+              }
+            </p>
+          </div>
+        )
+      }
+    </div >
   );
 }

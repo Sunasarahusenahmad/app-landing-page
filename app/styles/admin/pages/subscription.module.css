@@ -51,7 +51,7 @@
 }
 
 .activeTab {
-    color: #fab12f;
+    color: var(--primary-color);
     font-weight: 600;
 }
 
@@ -62,7 +62,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background-color: #fab12f;
+    background-color: var(--primary-color);
 }
 
 /* Plans Grid */
@@ -83,7 +83,7 @@
 
 .planCard:hover {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    border-color: #fab12f;
+    border-color: var(--primary-color);
 }
 
 .planHeader {
@@ -103,7 +103,7 @@
 .planPrice {
     font-size: 24px;
     font-weight: 700;
-    color: #fab12f;
+    color: var(--primary-color);
 }
 
 .planPeriod {
@@ -184,7 +184,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #fab12f, #E6CFA5);
+    background: var(--primary-color);
     color: white;
     padding: 10px 20px;
     border-radius: 8px;
@@ -342,7 +342,7 @@
 
 .saveButton {
     padding: 10px 20px;
-    background: linear-gradient(135deg, #fab12f, #E6CFA5);
+    background: var(--primary-color);
     border: none;
     border-radius: 8px;
     color: white;

@@ -378,7 +378,7 @@ export default function SubscriptionPlanPage() {
                                             </td>
                                             <td className={styles.tableCell}>
                                                 {txn.invoice_url ? (
-                                                    <a href={txn.invoice_url} target="_blank" rel="noreferrer" style={{ color: '#fab12f', textDecoration: 'underline' }}>
+                                                    <a href={txn.invoice_url} target="_blank" rel="noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>
                                                         View Invoice
                                                     </a>
                                                 ) : '-'}
